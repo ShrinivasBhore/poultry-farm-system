@@ -1,0 +1,986 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Poultry Farm Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Farm Dashboard</h1>
+            <p id="welcomeMessage">Welcome back! Here's your farm overview for today.</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-kiwi-bird"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalBirds">0</h3>
+                    <p>Total Birds</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-house"></i></div>
+                <div class="stat-info">
+                    <h3 id="activeFlocks">0</h3>
+                    <p>Active Flocks</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <h3 id="monthlyRevenue">₹0</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-info">
+                    <h3 id="profit">₹0</h3>
+                    <p>Monthly Profit</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Message for New Users -->
+        <div id="setupMessage" class="dashboard-card" style="display: none;">
+            <div class="card-header">
+                <h3><i class="fas fa-rocket"></i> Welcome to PoultryPro Manager!</h3>
+            </div>
+            <div class="card-content">
+                <p>It looks like you're new here. To get started with your farm management:</p>
+                <div class="setup-steps">
+                    <div class="setup-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Setup Your Profile</h4>
+                            <p>Add your farm details and personal information</p>
+                            <button class="btn btn-primary" onclick="window.location.href='profile.html'">Setup Profile</button>
+                        </div>
+                    </div>
+                    <div class="setup-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Add Your First Flock</h4>
+                            <p>Register your poultry flocks to start tracking</p>
+                            <button class="btn btn-primary" onclick="window.location.href='flock.html'">Add Flock</button>
+                        </div>
+                    </div>
+                    <div class="setup-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Record Daily Activities</h4>
+                            <p>Start logging feed, sales, and health records</p>
+                            <button class="btn btn-primary" onclick="showQuickActionsGuide()">View Guide</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities and Alerts -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Recent Activities</h3>
+                    <a href="reports.html" class="view-all">View All</a>
+                </div>
+                <div class="card-content">
+                    <div id="recentActivities" class="activity-list">
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>No activities recorded yet</p>
+                            <small>Start by adding flocks, recording feed, or making sales</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Alerts & Notifications</h3>
+                    <a href="#" class="view-all" id="markAllRead">Mark All Read</a>
+                </div>
+                <div class="card-content">
+                    <div id="alerts" class="alert-list">
+                        <div class="empty-state">
+                            <i class="fas fa-bell"></i>
+                            <p>No alerts at the moment</p>
+                            <small>We'll notify you about important farm events</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flock Status Overview -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Flock Status Overview</h3>
+            </div>
+            <div class="card-content">
+                <div id="flockStatus" class="flock-status">
+                    <div class="empty-state">
+                        <i class="fas fa-kiwi-bird"></i>
+                        <p>No active flocks</p>
+                        <small>Add your first flock to start tracking</small>
+                        <button class="btn btn-primary" onclick="window.location.href='flock.html'" style="margin-top: 1rem;">Add Flock</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Production Overview</h3>
+                    <select id="chartPeriod" class="form-select">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 3 months</option>
+                    </select>
+                </div>
+                <div class="card-content">
+                    <div id="productionChartContainer">
+                        <canvas id="productionChart" class="chart" style="display: none;"></canvas>
+                        <div id="productionEmpty" class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No production data available</p>
+                            <small>Start recording flock data to see production trends</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Financial Summary</h3>
+                    <select id="financePeriod" class="form-select">
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 3 months</option>
+                        <option value="180">Last 6 months</option>
+                    </select>
+                </div>
+                <div class="card-content">
+                    <div id="financeChartContainer">
+                        <canvas id="financeChart" class="chart" style="display: none;"></canvas>
+                        <div id="financeEmpty" class="empty-state">
+                            <i class="fas fa-rupee-sign"></i>
+                            <p>No financial data available</p>
+                            <small>Record sales and expenses to track finances</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Quick Actions</h3>
+            </div>
+            <div class="card-content">
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="window.location.href='flock.html'">
+                        <div class="action-icon"><i class="fas fa-kiwi-bird"></i></div>
+                        <span>Add New Flock</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='feed.html'">
+                        <div class="action-icon"><i class="fas fa-wheat-alt"></i></div>
+                        <span>Record Feed</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='sales.html'">
+                        <div class="action-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <span>Record Sale</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='expenses.html'">
+                        <div class="action-icon"><i class="fas fa-receipt"></i></div>
+                        <span>Add Expense</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='health.html'">
+                        <div class="action-icon"><i class="fas fa-heartbeat"></i></div>
+                        <span>Health Check</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='vaccination.html'">
+                        <div class="action-icon"><i class="fas fa-syringe"></i></div>
+                        <span>Schedule Vaccination</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+    
+    <script>
+        // Real-time data management system
+        class PoultryDataManager {
+            constructor() {
+                this.initializeStorage();
+            }
+
+            // Initialize storage structure (only if not exists)
+            initializeStorage() {
+                const storageKeys = [
+                    'userData', 'flocks', 'activities', 'alerts', 
+                    'sales', 'expenses', 'feedRecords', 'healthRecords'
+                ];
+
+                storageKeys.forEach(key => {
+                    if (!localStorage.getItem(key)) {
+                        localStorage.setItem(key, JSON.stringify(
+                            key === 'userData' ? {} : []
+                        ));
+                    }
+                });
+            }
+
+            // Get data from storage
+            getData(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(key) || (key === 'userData' ? '{}' : '[]'));
+                } catch (e) {
+                    console.error(`Error parsing ${key} data:`, e);
+                    return key === 'userData' ? {} : [];
+                }
+            }
+
+            // Save data to storage
+            saveData(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    this.triggerDataUpdate();
+                } catch (e) {
+                    console.error(`Error saving ${key} data:`, e);
+                }
+            }
+
+            // Add new activity
+            addActivity(type, message) {
+                const activities = this.getData('activities');
+                activities.unshift({
+                    id: Date.now(),
+                    type,
+                    message,
+                    timestamp: new Date().toISOString()
+                });
+                // Keep only last 50 activities
+                if (activities.length > 50) {
+                    activities.splice(50);
+                }
+                this.saveData('activities', activities);
+            }
+
+            // Add new alert
+            addAlert(type, message, dueDate = null) {
+                const alerts = this.getData('alerts');
+                alerts.unshift({
+                    id: Date.now(),
+                    type,
+                    message,
+                    timestamp: new Date().toISOString(),
+                    dueDate,
+                    read: false
+                });
+                this.saveData('alerts', alerts);
+            }
+
+            // Calculate statistics
+            calculateStats() {
+                const flocks = this.getData('flocks');
+                const sales = this.getData('sales');
+                const expenses = this.getData('expenses');
+
+                // Calculate totals
+                const totalBirds = flocks.reduce((sum, flock) => sum + (flock.currentCount || 0), 0);
+                const activeFlocks = flocks.filter(flock => flock.status === 'active').length;
+
+                // Calculate monthly revenue and expenses
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                const monthlyRevenue = sales
+                    .filter(sale => new Date(sale.date) >= monthStart)
+                    .reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+
+                const monthlyExpenses = expenses
+                    .filter(expense => new Date(expense.date) >= monthStart)
+                    .reduce((sum, expense) => sum + (expense.amount || 0), 0);
+
+                const monthlyProfit = monthlyRevenue - monthlyExpenses;
+
+                return {
+                    totalBirds,
+                    activeFlocks,
+                    monthlyRevenue,
+                    monthlyExpenses,
+                    monthlyProfit
+                };
+            }
+
+            // Trigger data update event
+            triggerDataUpdate() {
+                window.dispatchEvent(new CustomEvent('dataUpdated'));
+            }
+        }
+
+        // Initialize data manager
+        const dataManager = new PoultryDataManager();
+
+        // Utility functions
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-IN', options);
+        }
+
+        function formatTimeDifference(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffMs = now - past;
+            
+            const minutes = Math.floor(diffMs / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            
+            return "Just now";
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Load and display dashboard data
+        function loadDashboardData() {
+            const userData = dataManager.getData('userData');
+            const stats = dataManager.calculateStats();
+
+            // Update welcome message
+            const today = new Date().toLocaleDateString('en-IN', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            
+            const userName = userData.name || userData.farmName || 'User';
+            document.getElementById('welcomeMessage').textContent = 
+                `Welcome back, ${userName}! Here's your farm overview for ${today}.`;
+
+            // Update stats cards
+            document.getElementById('totalBirds').textContent = stats.totalBirds.toLocaleString();
+            document.getElementById('activeFlocks').textContent = stats.activeFlocks;
+            document.getElementById('monthlyRevenue').textContent = formatCurrency(stats.monthlyRevenue);
+            document.getElementById('profit').textContent = formatCurrency(stats.monthlyProfit);
+
+            // Check if user is new (no flocks and no profile)
+            const isNewUser = stats.activeFlocks === 0 && !userData.name;
+            document.getElementById('setupMessage').style.display = isNewUser ? 'block' : 'none';
+
+            // Load activities
+            loadActivities();
+            
+            // Load alerts
+            loadAlerts();
+            
+            // Load flock status
+            loadFlockStatus();
+            
+            // Load charts
+            loadCharts();
+        }
+
+        function loadActivities() {
+            const activities = dataManager.getData('activities');
+            const container = document.getElementById('recentActivities');
+
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No activities recorded yet</p>
+                        <small>Start by adding flocks, recording feed, or making sales</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            activities.slice(0, 5).forEach(activity => {
+                const iconClass = {
+                    'feed': 'fas fa-shopping-bag',
+                    'flock': 'fas fa-kiwi-bird',
+                    'sale': 'fas fa-money-bill-wave',
+                    'health': 'fas fa-heartbeat',
+                    'expense': 'fas fa-receipt',
+                    'vaccination': 'fas fa-syringe'
+                }[activity.type] || 'fas fa-info-circle';
+                
+                const activityEl = document.createElement('div');
+                activityEl.className = 'activity-item';
+                activityEl.innerHTML = `
+                    <div class="activity-icon"><i class="${iconClass}"></i></div>
+                    <div class="activity-info">
+                        <p>${activity.message}</p>
+                        <span class="activity-time">${formatTimeDifference(activity.timestamp)}</span>
+                    </div>
+                `;
+                container.appendChild(activityEl);
+            });
+        }
+
+        function loadAlerts() {
+            const alerts = dataManager.getData('alerts').filter(alert => !alert.read);
+            const container = document.getElementById('alerts');
+
+            if (alerts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell"></i>
+                        <p>No alerts at the moment</p>
+                        <small>We'll notify you about important farm events</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            alerts.slice(0, 5).forEach(alert => {
+                const iconClass = {
+                    'warning': 'fas fa-exclamation-triangle',
+                    'info': 'fas fa-info-circle',
+                    'success': 'fas fa-check-circle',
+                    'danger': 'fas fa-exclamation-circle',
+                    'vaccination': 'fas fa-syringe'
+                }[alert.type] || 'fas fa-info-circle';
+                
+                const timeText = alert.dueDate ? 
+                    `Due: ${formatDate(alert.dueDate)}` : 
+                    formatTimeDifference(alert.timestamp);
+                
+                const alertEl = document.createElement('div');
+                alertEl.className = `alert-item ${alert.type}`;
+                alertEl.innerHTML = `
+                    <div class="alert-icon"><i class="${iconClass}"></i></div>
+                    <div class="alert-info">
+                        <p>${alert.message}</p>
+                        <span class="alert-time">${timeText}</span>
+                    </div>
+                `;
+                container.appendChild(alertEl);
+            });
+        }
+
+        function loadFlockStatus() {
+            const flocks = dataManager.getData('flocks').filter(flock => flock.status === 'active');
+            const container = document.getElementById('flockStatus');
+
+            if (flocks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-kiwi-bird"></i>
+                        <p>No active flocks</p>
+                        <small>Add your first flock to start tracking</small>
+                        <button class="btn btn-primary" onclick="window.location.href='flock.html'" style="margin-top: 1rem;">Add Flock</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            flocks.forEach(flock => {
+                const age = Math.floor((new Date() - new Date(flock.startDate)) / (1000 * 60 * 60 * 24));
+                let progress = 0;
+                let statusText = '';
+                
+                if (flock.type === 'Broilers') {
+                    progress = Math.min(100, Math.round((age / 45) * 100));
+                    statusText = `Age: ${age} days | Count: ${flock.currentCount || flock.initialCount} birds`;
+                } else if (flock.type === 'Layers') {
+                    progress = Math.min(100, Math.round((age / 150) * 100));
+                    statusText = `Age: ${age} days | Count: ${flock.currentCount || flock.initialCount} birds`;
+                }
+                
+                const flockEl = document.createElement('div');
+                flockEl.className = 'flock-status-item';
+                flockEl.innerHTML = `
+                    <span class="flock-status-title">Flock #${flock.id} (${flock.type})</span>
+                    <span class="flock-status-value">${(flock.currentCount || flock.initialCount).toLocaleString()} birds</span>
+                    <span class="flock-status-title">${statusText}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                `;
+                container.appendChild(flockEl);
+            });
+        }
+
+        function loadCharts() {
+            const sales = dataManager.getData('sales');
+            const expenses = dataManager.getData('expenses');
+            const flocks = dataManager.getData('flocks');
+
+            // Show/hide charts based on data availability
+            const hasFinancialData = sales.length > 0 || expenses.length > 0;
+            const hasProductionData = flocks.length > 0;
+
+            document.getElementById('financeChart').style.display = hasFinancialData ? 'block' : 'none';
+            document.getElementById('financeEmpty').style.display = hasFinancialData ? 'none' : 'block';
+
+            document.getElementById('productionChart').style.display = hasProductionData ? 'block' : 'none';
+            document.getElementById('productionEmpty').style.display = hasProductionData ? 'none' : 'block';
+
+            if (hasFinancialData) {
+                initFinanceChart();
+            }
+            if (hasProductionData) {
+                initProductionChart();
+            }
+        }
+
+        function initProductionChart() {
+            const flocks = dataManager.getData('flocks');
+            if (flocks.length === 0) return;
+
+            const period = parseInt(document.getElementById('chartPeriod').value);
+            const ctx = document.getElementById('productionChart').getContext('2d');
+            
+            // Generate labels based on period
+            const labels = [];
+            const now = new Date();
+            
+            for (let i = period - 1; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+            }
+            
+            // For now, show placeholder data since we don't have daily production records
+            const placeholderData = labels.map(() => 0);
+            
+            if (window.productionChartInstance) {
+                window.productionChartInstance.destroy();
+            }
+            
+            window.productionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Egg Production',
+                            data: placeholderData,
+                            borderColor: '#2e7d32',
+                            backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Start recording daily production to see trends'
+                        }
+                    }
+                }
+            });
+        }
+
+        function initFinanceChart() {
+            const sales = dataManager.getData('sales');
+            const expenses = dataManager.getData('expenses');
+            const period = parseInt(document.getElementById('financePeriod').value);
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            
+            // Calculate financial data for the period
+            const now = new Date();
+            const startDate = new Date(now);
+            startDate.setDate(startDate.getDate() - period);
+            
+            const periodicSales = sales.filter(sale => new Date(sale.date) >= startDate);
+            const periodicExpenses = expenses.filter(expense => new Date(expense.date) >= startDate);
+            
+            const totalRevenue = periodicSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+            const totalExpenses = periodicExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+            const totalProfit = totalRevenue - totalExpenses;
+            
+            if (window.financeChartInstance) {
+                window.financeChartInstance.destroy();
+            }
+            
+            window.financeChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Revenue', 'Expenses', 'Profit'],
+                    datasets: [{
+                        data: [totalRevenue, totalExpenses, Math.max(0, totalProfit)],
+                        backgroundColor: [
+                            'rgba(46, 125, 50, 0.7)',
+                            'rgba(244, 67, 54, 0.7)',
+                            'rgba(33, 150, 243, 0.7)'
+                        ],
+                        borderColor: [
+                            '#2e7d32',
+                            '#f44336',
+                            '#2196f3'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert-toast ${type}`;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4caf50' : '#f44336'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            alert.innerHTML = `${icon} <span style="margin-left: 0.5rem;">${message}</span>`;
+            
+            alertContainer.appendChild(alert);
+            
+            // Animate in
+            setTimeout(() => {
+                alert.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                alert.style.transform = 'translateX(100%)';
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+
+        function showQuickActionsGuide() {
+            showAlert('Start with adding flocks, then record daily activities like feeding and health checks!', 'info');
+        }
+
+        function setupEventListeners() {
+            // Data update listener
+            window.addEventListener('dataUpdated', loadDashboardData);
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    showAlert('Logout successful', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1000);
+                }
+            });
+
+            // Mark all alerts as read
+            document.getElementById('markAllRead').addEventListener('click', function(e) {
+                e.preventDefault();
+                const alerts = dataManager.getData('alerts');
+                alerts.forEach(alert => alert.read = true);
+                dataManager.saveData('alerts', alerts);
+                showAlert('All alerts marked as read', 'success');
+            });
+
+            // Chart period changes
+            document.getElementById('chartPeriod').addEventListener('change', function() {
+                if (dataManager.getData('flocks').length > 0) {
+                    initProductionChart();
+                }
+            });
+
+            document.getElementById('financePeriod').addEventListener('change', function() {
+                const sales = dataManager.getData('sales');
+                const expenses = dataManager.getData('expenses');
+                if (sales.length > 0 || expenses.length > 0) {
+                    initFinanceChart();
+                }
+            });
+
+            // Auto-refresh data every 5 minutes
+            setInterval(() => {
+                loadDashboardData();
+            }, 5 * 60 * 1000);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            setupEventListeners();
+            
+            // Show welcome message for new users
+            const userData = dataManager.getData('userData');
+            if (!userData.name && !userData.farmName) {
+                setTimeout(() => {
+                    showAlert('Welcome to PoultryPro Manager! Set up your profile to get started.', 'info');
+                }, 2000);
+            }
+        });
+
+        // Auto-generate alerts based on data
+        function checkAndGenerateAlerts() {
+            const flocks = dataManager.getData('flocks');
+            const feedRecords = dataManager.getData('feedRecords');
+            const alerts = dataManager.getData('alerts');
+            
+            flocks.forEach(flock => {
+                if (flock.status !== 'active') return;
+                
+                const age = Math.floor((new Date() - new Date(flock.startDate)) / (1000 * 60 * 60 * 24));
+                
+                // Check for vaccination alerts
+                if (flock.type === 'Broilers') {
+                    // Day 7 - Newcastle Disease
+                    if (age === 6 && !alerts.some(a => a.message.includes(`Flock #${flock.id}`) && a.message.includes('Newcastle'))) {
+                        dataManager.addAlert('info', `Vaccination due tomorrow for Flock #${flock.id} - Newcastle Disease (Day 7)`, 
+                            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+                    }
+                    
+                    // Day 14 - Gumboro
+                    if (age === 13 && !alerts.some(a => a.message.includes(`Flock #${flock.id}`) && a.message.includes('Gumboro'))) {
+                        dataManager.addAlert('info', `Vaccination due tomorrow for Flock #${flock.id} - Gumboro (Day 14)`, 
+                            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+                    }
+                    
+                    // Market ready alert (Day 40+)
+                    if (age >= 40 && age <= 45 && !alerts.some(a => a.message.includes(`Flock #${flock.id}`) && a.message.includes('market ready'))) {
+                        dataManager.addAlert('success', `Flock #${flock.id} is approaching market weight (${age} days old)`, null);
+                    }
+                } else if (flock.type === 'Layers') {
+                    // Point of lay alert (18-20 weeks)
+                    const weeks = Math.floor(age / 7);
+                    if (weeks >= 18 && weeks <= 20 && !alerts.some(a => a.message.includes(`Flock #${flock.id}`) && a.message.includes('point of lay'))) {
+                        dataManager.addAlert('success', `Flock #${flock.id} is reaching point of lay (${weeks} weeks old)`, null);
+                    }
+                }
+                
+                // Check feed consumption alerts
+                const recentFeeding = feedRecords
+                    .filter(record => record.flockId === flock.id && 
+                            new Date(record.date) >= new Date(Date.now() - 2 * 24 * 60 * 60 * 1000))
+                    .length;
+                
+                if (recentFeeding === 0 && !alerts.some(a => a.message.includes(`Flock #${flock.id}`) && a.message.includes('feeding record'))) {
+                    dataManager.addAlert('warning', `No feeding records for Flock #${flock.id} in the last 2 days`, null);
+                }
+            });
+        }
+
+        // API simulation for real-world integration
+        class PoultryAPI {
+            static async syncData() {
+                // In a real application, this would sync with a backend server
+                try {
+                    // Simulate API call
+                    const response = await new Promise(resolve => {
+                        setTimeout(() => resolve({ success: true, timestamp: new Date().toISOString() }), 1000);
+                    });
+                    
+                    if (response.success) {
+                        localStorage.setItem('lastSync', response.timestamp);
+                        dataManager.addActivity('system', 'Data synchronized with server');
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Sync failed:', error);
+                    dataManager.addAlert('warning', 'Failed to sync data with server', null);
+                    return false;
+                }
+            }
+            
+            static async exportData() {
+                // Export all data as JSON
+                const allData = {
+                    userData: dataManager.getData('userData'),
+                    flocks: dataManager.getData('flocks'),
+                    sales: dataManager.getData('sales'),
+                    expenses: dataManager.getData('expenses'),
+                    feedRecords: dataManager.getData('feedRecords'),
+                    healthRecords: dataManager.getData('healthRecords'),
+                    activities: dataManager.getData('activities'),
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(allData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `poultry-farm-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                dataManager.addActivity('system', 'Farm data exported successfully');
+                showAlert('Data exported successfully', 'success');
+            }
+            
+            static async importData(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            // Validate data structure
+                            const requiredKeys = ['userData', 'flocks', 'sales', 'expenses'];
+                            const isValid = requiredKeys.every(key => data.hasOwnProperty(key));
+                            
+                            if (!isValid) {
+                                throw new Error('Invalid data format');
+                            }
+                            
+                            // Import data
+                            Object.keys(data).forEach(key => {
+                                if (key !== 'exportDate') {
+                                    dataManager.saveData(key, data[key]);
+                                }
+                            });
+                            
+                            dataManager.addActivity('system', `Data imported from ${data.exportDate ? new Date(data.exportDate).toLocaleDateString() : 'backup'}`);
+                            showAlert('Data imported successfully', 'success');
+                            resolve(true);
+                            
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+            }
+        }
+
+        // Add export/import functionality to Quick Actions
+        function addDataManagementActions() {
+            const quickActions = document.querySelector('.quick-actions');
+            
+            // Add export button
+            const exportBtn = document.createElement('button');
+            exportBtn.className = 'action-btn';
+            exportBtn.innerHTML = `
+                <div class="action-icon"><i class="fas fa-download"></i></div>
+                <span>Export Data</span>
+            `;
+            exportBtn.onclick = () => PoultryAPI.exportData();
+            
+            // Add import button
+            const importBtn = document.createElement('button');
+            importBtn.className = 'action-btn';
+            importBtn.innerHTML = `
+                <div class="action-icon"><i class="fas fa-upload"></i></div>
+                <span>Import Data</span>
+            `;
+            importBtn.onclick = () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        PoultryAPI.importData(file).catch(error => {
+                            showAlert('Error importing data: ' + error.message, 'error');
+                        });
+                    }
+                };
+                input.click();
+            };
+            
+            quickActions.appendChild(exportBtn);
+            quickActions.appendChild(importBtn);
+        }
+
+        // Enhanced initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            setupEventListeners();
+            addDataManagementActions();
+            
+            // Check for alerts every hour
+            setInterval(checkAndGenerateAlerts, 60 * 60 * 1000);
+            checkAndGenerateAlerts(); // Run immediately
+            
+            // Show welcome message for new users
+            const userData = dataManager.getData('userData');
+            if (!userData.name && !userData.farmName) {
+                setTimeout(() => {
+                    showAlert('Welcome to PoultryPro Manager! Set up your profile to get started.', 'info');
+                }, 2000);
+            }
+            
+            // Show last sync info if available
+            const lastSync = localStorage.getItem('lastSync');
+            if (lastSync) {
+                console.log('Last sync:', new Date(lastSync).toLocaleString());
+            }
+        });
+
+        // Utility function to clear all data (for testing/reset)
+        function resetAllData() {
+            if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+                const keys = ['userData', 'flocks', 'activities', 'alerts', 'sales', 'expenses', 'feedRecords', 'healthRecords'];
+                keys.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                localStorage.removeItem('lastSync');
+                location.reload();
+            }
+        }
+
+        // Make some functions globally available for debugging
+        window.PoultryDebug = {
+            resetAllData,
+            dataManager,
+            PoultryAPI,
+            checkAndGenerateAlerts
+        };

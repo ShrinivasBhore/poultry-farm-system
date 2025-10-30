@@ -1,0 +1,1046 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management - Poultry Farm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link active">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Expenses Management <span class="real-time-indicator"><span class="pulse"></span>Live</span></h1>
+            <div>
+                <button id="addExpenseBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Expense</button>
+                <button id="addRecurringBtn" class="btn btn-secondary"><i class="fas fa-sync-alt"></i> Recurring</button>
+            </div>
+        </div>
+
+        <!-- Expense Summary Cards -->
+        <div class="expense-summary">
+            <div class="summary-card">
+                <div class="summary-icon">📊</div>
+                <div class="summary-info">
+                    <h3 id="todayExpense">₹0</h3>
+                    <p>Today's Expenses</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">📈</div>
+                <div class="summary-info">
+                    <h3 id="monthlyExpense">₹0</h3>
+                    <p>Monthly Expenses</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">🌾</div>
+                <div class="summary-info">
+                    <h3 id="feedExpense">₹0</h3>
+                    <p>Feed Expenses</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">💊</div>
+                <div class="summary-info">
+                    <h3 id="medicalExpense">₹0</h3>
+                    <p>Medical Expenses</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Categories Chart -->
+        <div class="expense-chart-section">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>Expense Categories</h3>
+                    <select id="chartPeriod" class="form-select">
+                        <option value="current_month">Current Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="last_3_months">Last 3 Months</option>
+                        <option value="current_year">Current Year</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <input type="text" id="expenseSearch" placeholder="Search expenses...">
+            </div>
+            <div class="filter-controls">
+                <input type="date" id="fromDate" class="form-input">
+                <input type="date" id="toDate" class="form-input">
+                <select id="categoryFilter" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="feed">Feed</option>
+                    <option value="medical">Medical</option>
+                    <option value="labor">Labor</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="transport">Transport</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="paymentMethodFilter" class="form-select">
+                    <option value="">All Payment Methods</option>
+                    <option value="cash">Cash</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="upi">UPI</option>
+                </select>
+                <button id="filterExpensesBtn" class="btn btn-secondary">Filter</button>
+                <button id="clearFilterBtn" class="btn btn-outline">Clear</button>
+                <button id="exportBtn" class="btn btn-outline"><i class="fas fa-download"></i> Export</button>
+            </div>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="table-container">
+            <table id="expensesTable" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount (₹)</th>
+                        <th>Payment Method</th>
+                        <th>Receipt</th>
+                        <th>Added By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Expense data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="expensesPagination" class="pagination">
+            <!-- Pagination will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Add/Edit Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="expenseModalTitle">Add Expense</h2>
+                <span class="close" id="closeExpenseModal">&times;</span>
+            </div>
+            <form id="expenseForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expenseDate">Date *</label>
+                        <input type="date" id="expenseDate" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseCategory">Category *</label>
+                        <select id="expenseCategory" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="feed">Feed</option>
+                            <option value="medical">Medical/Vaccination</option>
+                            <option value="labor">Labor</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="transport">Transport</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseDescription">Description *</label>
+                    <input type="text" id="expenseDescription" name="description" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expenseAmount">Amount (₹) *</label>
+                        <input type="number" id="expenseAmount" name="amount" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="expensePaymentMethod">Payment Method *</label>
+                        <select id="expensePaymentMethod" name="paymentMethod" required>
+                            <option value="">Select Method</option>
+                            <option value="cash">Cash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="upi">UPI</option>
+                            <option value="card">Credit/Debit Card</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expenseVendor">Vendor/Supplier</label>
+                        <input type="text" id="expenseVendor" name="vendor">
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseInvoiceNumber">Invoice/Bill Number</label>
+                        <input type="text" id="expenseInvoiceNumber" name="invoiceNumber">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseFlock">Related Flock (if applicable)</label>
+                    <select id="expenseFlock" name="flockId">
+                        <option value="">Select Flock</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseReceipt">Receipt/Document</label>
+                    <input type="file" id="expenseReceipt" name="receipt" accept="image/*,.pdf">
+                    <small class="form-text">Upload receipt image or PDF (Max 5MB)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseNotes">Notes</label>
+                    <textarea id="expenseNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('expenseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recurring Expense Modal -->
+    <div id="recurringExpenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Recurring Expense</h2>
+                <span class="close" id="closeRecurringModal">&times;</span>
+            </div>
+            <form id="recurringExpenseForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringCategory">Category *</label>
+                        <select id="recurringCategory" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="labor">Labor</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="rent">Rent</option>
+                            <option value="loan">Loan Payment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recurringFrequency">Frequency *</label>
+                        <select id="recurringFrequency" name="frequency" required>
+                            <option value="">Select Frequency</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recurringDescription">Description *</label>
+                    <input type="text" id="recurringDescription" name="description" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringAmount">Amount (₹) *</label>
+                        <input type="number" id="recurringAmount" name="amount" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="recurringStartDate">Start Date *</label>
+                        <input type="date" id="recurringStartDate" name="startDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recurringEndDate">End Date</label>
+                        <input type="date" id="recurringEndDate" name="endDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="recurringPaymentMethod">Payment Method *</label>
+                        <select id="recurringPaymentMethod" name="paymentMethod" required>
+                            <option value="cash">Cash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="upi">UPI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recurringNotes">Notes</label>
+                    <textarea id="recurringNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('recurringExpenseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Recurring Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expense Details Modal -->
+    <div id="expenseDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Expense Details</h2>
+                <span class="close" id="closeDetailsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="expenseDetails">
+                    <!-- Expense details will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('expenseDetailsModal')">Close</button>
+                    <button type="button" id="editExpenseBtn" class="btn btn-primary">Edit</button>
+                    <button type="button" id="deleteExpenseBtn" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+    
+    <script>
+        // Global variables
+        let expenses = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let expenseChart = null;
+        let editingExpenseId = null;
+
+        // Initialize the expense management system
+        function initializeExpenseManagement() {
+            // Set default dates for filters
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('fromDate').valueAsDate = firstDayOfMonth;
+            document.getElementById('toDate').valueAsDate = today;
+            document.getElementById('expenseDate').valueAsDate = today;
+            document.getElementById('recurringStartDate').valueAsDate = today;
+
+            // Load sample data if no data exists
+            if (!localStorage.getItem('poultryExpenses')) {
+                loadSampleData();
+            }
+            
+            // Load data from localStorage
+            loadExpenseData();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize the chart
+            initializeExpenseChart();
+            
+            // Simulate real-time updates
+            simulateRealTimeUpdates();
+        }
+
+        // Load sample data for demonstration
+        function loadSampleData() {
+            const sampleExpenses = [
+                { id: 1, date: '2023-10-15', category: 'feed', description: 'Chicken feed purchase', amount: 12500, paymentMethod: 'bank_transfer', vendor: 'Agro Feeds Ltd', invoiceNumber: 'AF-231015', flockId: 'FLK-001', notes: 'Bulk purchase for October', addedBy: 'Admin', receipt: '' },
+                { id: 2, date: '2023-10-16', category: 'medical', description: 'Vaccines for new flock', amount: 3500, paymentMethod: 'cash', vendor: 'Vet Solutions', invoiceNumber: 'VS-101623', flockId: 'FLK-002', notes: 'Newcastle disease vaccine', addedBy: 'Manager', receipt: '' },
+                { id: 3, date: '2023-10-17', category: 'labor', description: 'Staff wages', amount: 8500, paymentMethod: 'cash', vendor: '', invoiceNumber: '', flockId: '', notes: 'Weekly wages for farm workers', addedBy: 'Admin', receipt: '' },
+                { id: 4, date: '2023-10-18', category: 'utilities', description: 'Electricity bill', amount: 4200, paymentMethod: 'upi', vendor: 'State Electricity Board', invoiceNumber: 'SEB-789456', flockId: '', notes: 'Monthly electricity bill', addedBy: 'Admin', receipt: '' },
+                { id: 5, date: '2023-10-19', category: 'feed', description: 'Supplement purchase', amount: 3200, paymentMethod: 'bank_transfer', vendor: 'NutriFeeds Inc', invoiceNumber: 'NFI-101923', flockId: 'FLK-001', notes: 'Vitamin supplements', addedBy: 'Manager', receipt: '' },
+                { id: 6, date: '2023-10-20', category: 'maintenance', description: 'Equipment repair', amount: 1800, paymentMethod: 'cash', vendor: 'Local Repair Service', invoiceNumber: '', flockId: '', notes: 'Repair of feeding equipment', addedBy: 'Worker', receipt: '' },
+                { id: 7, date: '2023-10-21', category: 'transport', description: 'Delivery van fuel', amount: 2500, paymentMethod: 'cash', vendor: 'Petrol Pump', invoiceNumber: '', flockId: '', notes: 'Fuel for product delivery', addedBy: 'Driver', receipt: '' },
+                { id: 8, date: '2023-10-22', category: 'other', description: 'Office supplies', amount: 1200, paymentMethod: 'upi', vendor: 'Stationery Shop', invoiceNumber: '', flockId: '', notes: 'Paper, pens, etc.', addedBy: 'Admin', receipt: '' }
+            ];
+            
+            localStorage.setItem('poultryExpenses', JSON.stringify(sampleExpenses));
+        }
+
+        // Load expense data from localStorage
+        function loadExpenseData() {
+            const expensesData = localStorage.getItem('poultryExpenses');
+            if (expensesData) {
+                expenses = JSON.parse(expensesData);
+                renderExpensesTable();
+                updateSummaryCards();
+                updateExpenseChart();
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Modal open/close
+            document.getElementById('addExpenseBtn').addEventListener('click', () => openModal('expenseModal'));
+            document.getElementById('addRecurringBtn').addEventListener('click', () => openModal('recurringExpenseModal'));
+            document.getElementById('closeExpenseModal').addEventListener('click', () => closeModal('expenseModal'));
+            document.getElementById('closeRecurringModal').addEventListener('click', () => closeModal('recurringExpenseModal'));
+            document.getElementById('closeDetailsModal').addEventListener('click', () => closeModal('expenseDetailsModal'));
+            
+            // Form submissions
+            document.getElementById('expenseForm').addEventListener('submit', handleExpenseSubmit);
+            document.getElementById('recurringExpenseForm').addEventListener('submit', handleRecurringExpenseSubmit);
+            
+            // Filtering
+            document.getElementById('filterExpensesBtn').addEventListener('click', applyFilters);
+            document.getElementById('clearFilterBtn').addEventListener('click', clearFilters);
+            document.getElementById('expenseSearch').addEventListener('input', applyFilters);
+            document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+            document.getElementById('paymentMethodFilter').addEventListener('change', applyFilters);
+            document.getElementById('fromDate').addEventListener('change', applyFilters);
+            document.getElementById('toDate').addEventListener('change', applyFilters);
+            
+            // Chart period change
+            document.getElementById('chartPeriod').addEventListener('change', updateExpenseChart);
+            
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportExpenses);
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target.classList.contains('modal')) {
+                    closeAllModals();
+                }
+            });
+        }
+
+        // Open a modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            
+            if (modalId === 'expenseModal' && editingExpenseId) {
+                document.getElementById('expenseModalTitle').textContent = 'Edit Expense';
+                populateEditForm();
+            }
+        }
+
+        // Close a modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            
+            if (modalId === 'expenseModal') {
+                editingExpenseId = null;
+                document.getElementById('expenseModalTitle').textContent = 'Add Expense';
+                document.getElementById('expenseForm').reset();
+            }
+        }
+
+        // Close all modals
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+            
+            editingExpenseId = null;
+            document.getElementById('expenseModalTitle').textContent = 'Add Expense';
+            document.getElementById('expenseForm').reset();
+        }
+
+        // Handle expense form submission
+        function handleExpenseSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const expenseData = {
+                id: editingExpenseId || Date.now(),
+                date: formData.get('date'),
+                category: formData.get('category'),
+                description: formData.get('description'),
+                amount: parseFloat(formData.get('amount')),
+                paymentMethod: formData.get('paymentMethod'),
+                vendor: formData.get('vendor'),
+                invoiceNumber: formData.get('invoiceNumber'),
+                flockId: formData.get('flockId'),
+                notes: formData.get('notes'),
+                addedBy: 'Admin', // In a real app, this would be the logged in user
+                receipt: '' // File handling would be implemented in a real app
+            };
+            
+            if (editingExpenseId) {
+                // Update existing expense
+                const index = expenses.findIndex(exp => exp.id === editingExpenseId);
+                if (index !== -1) {
+                    expenses[index] = expenseData;
+                    showAlert('Expense updated successfully!', 'success');
+                }
+            } else {
+                // Add new expense
+                expenses.push(expenseData);
+                showAlert('Expense added successfully!', 'success');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('poultryExpenses', JSON.stringify(expenses));
+            
+            // Update UI
+            renderExpensesTable();
+            updateSummaryCards();
+            updateExpenseChart();
+            
+            // Close modal
+            closeModal('expenseModal');
+        }
+
+        // Handle recurring expense form submission
+        function handleRecurringExpenseSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const recurringData = {
+                category: formData.get('category'),
+                frequency: formData.get('frequency'),
+                description: formData.get('description'),
+                amount: parseFloat(formData.get('amount')),
+                startDate: formData.get('startDate'),
+                endDate: formData.get('endDate'),
+                paymentMethod: formData.get('paymentMethod'),
+                notes: formData.get('notes')
+            };
+            
+            // In a real application, this would be saved to a recurring expenses list
+            // and processed by a backend to create actual expenses at the specified intervals
+            
+            showAlert('Recurring expense setup successfully!', 'success');
+            closeModal('recurringExpenseModal');
+        }
+
+        // Render expenses table with pagination
+        function renderExpensesTable() {
+            const tableBody = document.getElementById('expensesTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+            
+            // Apply filters
+            const filteredExpenses = filterExpenses();
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedExpenses = filteredExpenses.slice(startIndex, startIndex + itemsPerPage);
+            
+            // Render table rows
+            paginatedExpenses.forEach(expense => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const expenseDate = new Date(expense.date);
+                const formattedDate = expenseDate.toLocaleDateString('en-IN');
+                
+                // Category badge
+                const categoryClass = `badge-${expense.category}`;
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td><span class="badge ${categoryClass}">${expense.category}</span></td>
+                    <td>${expense.description}</td>
+                    <td>₹${expense.amount.toLocaleString('en-IN')}</td>
+                    <td>${formatPaymentMethod(expense.paymentMethod)}</td>
+                    <td>${expense.receipt ? '<i class="fas fa-receipt"></i>' : ''}</td>
+                    <td>${expense.addedBy}</td>
+                    <td class="action-buttons">
+                        <button class="action-btn view-btn" data-id="${expense.id}"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn edit-btn" data-id="${expense.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" data-id="${expense.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            addActionButtonListeners();
+            
+            // Render pagination
+            renderPagination(totalPages);
+        }
+
+        // Add event listeners to action buttons
+        function addActionButtonListeners() {
+            // View buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const expenseId = parseInt(btn.getAttribute('data-id'));
+                    viewExpenseDetails(expenseId);
+                });
+            });
+            
+            // Edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const expenseId = parseInt(btn.getAttribute('data-id'));
+                    editExpense(expenseId);
+                });
+            });
+            
+            // Delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const expenseId = parseInt(btn.getAttribute('data-id'));
+                    deleteExpense(expenseId);
+                });
+            });
+        }
+
+        // View expense details
+        function viewExpenseDetails(expenseId) {
+            const expense = expenses.find(exp => exp.id === expenseId);
+            if (!expense) return;
+            
+            const expenseDate = new Date(expense.date);
+            const formattedDate = expenseDate.toLocaleDateString('en-IN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('expenseDetails').innerHTML = `
+                <div class="detail-row">
+                    <strong>Date:</strong> ${formattedDate}
+                </div>
+                <div class="detail-row">
+                    <strong>Category:</strong> <span class="badge badge-${expense.category}">${expense.category}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Description:</strong> ${expense.description}
+                </div>
+                <div class="detail-row">
+                    <strong>Amount:</strong> ₹${expense.amount.toLocaleString('en-IN')}
+                </div>
+                <div class="detail-row">
+                    <strong>Payment Method:</strong> ${formatPaymentMethod(expense.paymentMethod)}
+                </div>
+                <div class="detail-row">
+                    <strong>Vendor/Supplier:</strong> ${expense.vendor || 'N/A'}
+                </div>
+                <div class="detail-row">
+                    <strong>Invoice/Bill Number:</strong> ${expense.invoiceNumber || 'N/A'}
+                </div>
+                <div class="detail-row">
+                    <strong>Related Flock:</strong> ${expense.flockId || 'N/A'}
+                </div>
+                <div class="detail-row">
+                    <strong>Notes:</strong> ${expense.notes || 'N/A'}
+                </div>
+                <div class="detail-row">
+                    <strong>Added By:</strong> ${expense.addedBy}
+                </div>
+            `;
+            
+            // Set up edit and delete buttons
+            document.getElementById('editExpenseBtn').onclick = () => {
+                closeModal('expenseDetailsModal');
+                editExpense(expenseId);
+            };
+            
+            document.getElementById('deleteExpenseBtn').onclick = () => {
+                closeModal('expenseDetailsModal');
+                deleteExpense(expenseId);
+            };
+            
+            openModal('expenseDetailsModal');
+        }
+
+        // Edit expense
+        function editExpense(expenseId) {
+            const expense = expenses.find(exp => exp.id === expenseId);
+            if (!expense) return;
+            
+            editingExpenseId = expenseId;
+            
+            // Populate form fields
+            document.getElementById('expenseDate').value = expense.date;
+            document.getElementById('expenseCategory').value = expense.category;
+            document.getElementById('expenseDescription').value = expense.description;
+            document.getElementById('expenseAmount').value = expense.amount;
+            document.getElementById('expensePaymentMethod').value = expense.paymentMethod;
+            document.getElementById('expenseVendor').value = expense.vendor || '';
+            document.getElementById('expenseInvoiceNumber').value = expense.invoiceNumber || '';
+            document.getElementById('expenseFlock').value = expense.flockId || '';
+            document.getElementById('expenseNotes').value = expense.notes || '';
+            
+            openModal('expenseModal');
+        }
+
+        // Delete expense
+        function deleteExpense(expenseId) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                expenses = expenses.filter(exp => exp.id !== expenseId);
+                localStorage.setItem('poultryExpenses', JSON.stringify(expenses));
+                
+                renderExpensesTable();
+                updateSummaryCards();
+                updateExpenseChart();
+                
+                showAlert('Expense deleted successfully!', 'success');
+            }
+        }
+
+        // Apply filters to expenses
+        function applyFilters() {
+            currentPage = 1;
+            renderExpensesTable();
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('expenseSearch').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('paymentMethodFilter').value = '';
+            
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('fromDate').valueAsDate = firstDayOfMonth;
+            document.getElementById('toDate').valueAsDate = today;
+            
+            currentPage = 1;
+            renderExpensesTable();
+        }
+
+        // Filter expenses based on criteria
+        function filterExpenses() {
+            const searchText = document.getElementById('expenseSearch').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const paymentMethod = document.getElementById('paymentMethodFilter').value;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            
+            return expenses.filter(expense => {
+                // Search text filter
+                if (searchText && !expense.description.toLowerCase().includes(searchText) && 
+                    !expense.vendor?.toLowerCase().includes(searchText)) {
+                    return false;
+                }
+                
+                // Category filter
+                if (category && expense.category !== category) {
+                    return false;
+                }
+                
+                // Payment method filter
+                if (paymentMethod && expense.paymentMethod !== paymentMethod) {
+                    return false;
+                }
+                
+                // Date range filter
+                if (fromDate && expense.date < fromDate) {
+                    return false;
+                }
+                
+                if (toDate && expense.date > toDate) {
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+
+        // Render pagination controls
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('expensesPagination');
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevButton = document.createElement('button');
+            prevButton.className = 'page-btn';
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderExpensesTable();
+                }
+            });
+            paginationContainer.appendChild(prevButton);
+            
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderExpensesTable();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // Next button
+            const nextButton = document.createElement('button');
+            nextButton.className = 'page-btn';
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderExpensesTable();
+                }
+            });
+            paginationContainer.appendChild(nextButton);
+        }
+
+        // Update summary cards
+        function updateSummaryCards() {
+            const today = new Date().toISOString().split('T')[0];
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            let todayTotal = 0;
+            let monthlyTotal = 0;
+            let feedTotal = 0;
+            let medicalTotal = 0;
+            
+            expenses.forEach(expense => {
+                const expenseDate = new Date(expense.date);
+                
+                // Today's expenses
+                if (expense.date === today) {
+                    todayTotal += expense.amount;
+                }
+                
+                // Monthly expenses
+                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                    monthlyTotal += expense.amount;
+                }
+                
+                // Feed expenses
+                if (expense.category === 'feed') {
+                    feedTotal += expense.amount;
+                }
+                
+                // Medical expenses
+                if (expense.category === 'medical') {
+                    medicalTotal += expense.amount;
+                }
+            });
+            
+            document.getElementById('todayExpense').textContent = `₹${todayTotal.toLocaleString('en-IN')}`;
+            document.getElementById('monthlyExpense').textContent = `₹${monthlyTotal.toLocaleString('en-IN')}`;
+            document.getElementById('feedExpense').textContent = `₹${feedTotal.toLocaleString('en-IN')}`;
+            document.getElementById('medicalExpense').textContent = `₹${medicalTotal.toLocaleString('en-IN')}`;
+        }
+
+        // Initialize expense chart
+        function initializeExpenseChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            expenseChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#2c7a5a', '#3ab77d', '#f6ae2d', '#e53e3e', 
+                            '#dd6b20', '#3182ce', '#805ad5', '#a0aec0'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ₹${context.raw.toLocaleString('en-IN')}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update expense chart
+        function updateExpenseChart() {
+            const period = document.getElementById('chartPeriod').value;
+            const currentDate = new Date();
+            let startDate, endDate;
+            
+            switch (period) {
+                case 'current_month':
+                    startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                    break;
+                case 'last_month':
+                    startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+                    endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                    break;
+                case 'last_3_months':
+                    startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1);
+                    endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                    break;
+                case 'current_year':
+                    startDate = new Date(currentDate.getFullYear(), 0, 1);
+                    endDate = new Date(currentDate.getFullYear(), 11, 31);
+                    break;
+                default:
+                    startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            }
+            
+            // Filter expenses by date range
+            const filteredExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate >= startDate && expenseDate <= endDate;
+            });
+            
+            // Group expenses by category
+            const categories = {};
+            filteredExpenses.forEach(expense => {
+                if (!categories[expense.category]) {
+                    categories[expense.category] = 0;
+                }
+                categories[expense.category] += expense.amount;
+            });
+            
+            // Update chart data
+            expenseChart.data.labels = Object.keys(categories).map(cat => cat.charAt(0).toUpperCase() + cat.slice(1));
+            expenseChart.data.datasets[0].data = Object.values(categories);
+            expenseChart.update();
+        }
+
+        // Format payment method for display
+        function formatPaymentMethod(method) {
+            const methodMap = {
+                'cash': 'Cash',
+                'bank_transfer': 'Bank Transfer',
+                'cheque': 'Cheque',
+                'upi': 'UPI',
+                'card': 'Credit/Debit Card'
+            };
+            
+            return methodMap[method] || method;
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                ${message}
+                <button class="close-alert">&times;</button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Add event listener to close button
+            alert.querySelector('.close-alert').addEventListener('click', () => {
+                alert.remove();
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Export expenses to CSV
+        function exportExpenses() {
+            const filteredExpenses = filterExpenses();
+            
+            if (filteredExpenses.length === 0) {
+                showAlert('No expenses to export!', 'warning');
+                return;
+            }
+            
+            // Create CSV content
+            let csvContent = 'Date,Category,Description,Amount,Payment Method,Vendor,Invoice Number,Flock ID,Notes,Added By\n';
+            
+            filteredExpenses.forEach(expense => {
+                const row = [
+                    expense.date,
+                    expense.category,
+                    `"${expense.description.replace(/"/g, '""')}"`,
+                    expense.amount,
+                    expense.paymentMethod,
+                    expense.vendor || '',
+                    expense.invoiceNumber || '',
+                    expense.flockId || '',
+                    `"${(expense.notes || '').replace(/"/g, '""')}"`,
+                    expense.addedBy
+                ];
+                
+                csvContent += row.join(',') + '\n';
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `poultry_expenses_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('Expenses exported successfully!', 'success');
+        }
+
+        // Simulate real-time updates (for demonstration)
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // In a real application, this would be fetching data from a server
+                // For demonstration, we'll just update from localStorage
+                const updatedData = localStorage.getItem('poultryExpenses');
+                if (updatedData) {
+                    const parsedData = JSON.parse(updatedData);
+                    
+                    // Check if data has changed
+                    if (JSON.stringify(expenses) !== JSON.stringify(parsedData)) {
+                        expenses = parsedData;
+                        renderExpensesTable();
+                        updateSummaryCards();
+                        updateExpenseChart();
+                        
+                        // Show a subtle notification
+                        const alert = showAlert('Data updated', 'info');
+                    }
+                }
+            }, 5000); // Check every 5 seconds
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeExpenseManagement);
+    </script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoultryPro - Advanced Farm Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #ff9800;
+            --secondary-dark: #f57c00;
+            --text: #212121;
+            --text-light: #757575;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --error: #d32f2f;
+            --success: #388e3c;
+            --warning: #f57c00;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            min-height: 600px;
+        }
+
+        .brand-section {
+            flex: 1;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1590065480004-477ef6d4d5de?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover no-repeat;
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            display: none;
+        }
+
+        .brand-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .features-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list i {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .login-card {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-header p {
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-google {
+            background: #fff;
+            color: #757575;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-google:hover {
+            background: #f5f5f5;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-light);
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--text-light);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        .login-form {
+            display: block;
+        }
+
+        #registerForm {
+            display: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .password-strength {
+            height: 5px;
+            margin-top: 8px;
+            border-radius: var(--border-radius);
+            background: #eee;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .password-strength-weak {
+            background: var(--error);
+            width: 33%;
+        }
+
+        .password-strength-medium {
+            background: var(--warning);
+            width: 66%;
+        }
+
+        .password-strength-strong {
+            background: var(--success);
+            width: 100%;
+        }
+
+        .password-hints {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background: white;
+        }
+
+        @media (min-width: 992px) {
+            .brand-section {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 100%;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="brand-section">
+            <h1><i class="fas fa-feather-alt"></i> PoultryPro</h1>
+            <p>Advanced management system for modern poultry farms</p>
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle"></i> Real-time flock monitoring</li>
+                <li><i class="fas fa-check-circle"></i> Feed and inventory management</li>
+                <li><i class="fas fa-check-circle"></i> Health and vaccination tracking</li>
+                <li><i class="fas fa-check-circle"></i> Production and egg quality analysis</li>
+                <li><i class="fas fa-check-circle"></i> Financial reporting and forecasting</li>
+            </ul>
+        </div>
+        
+        <div class="login-card">
+            <div class="language-selector">
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="pt">Português</option>
+                </select>
+            </div>
+            
+            <div class="login-header">
+                <h1><i class="fas fa-feather"></i> PoultryPro</h1>
+                <p>Welcome back! Please login to your account</p>
+            </div>
+            
+            <div id="alertContainer"></div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <span class="password-toggle" id="passwordToggle">
+                        <i class="far fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember me</label>
+                    <a href="#" id="forgotPassword" style="margin-left: auto;">Forgot password?</a>
+                </div>
+                
+                <button type="submit" href="dashboard.html" class="btn btn-primary">Login</button>
+                
+                <div class="divider">
+                    <span>Or continue with</span>
+                </div>
+                
+                <button type="button" class="btn btn-google">
+                    <i class="fab fa-google"></i> Google
+                </button>
+                
+                <div class="form-footer">
+                    <span>Don't have an account? <a href="#" id="registerLink">Register here</a></span>
+                </div>
+            </form>
+            
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" name="name" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail">Email Address</label>
+                    <input type="email" id="regEmail" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" name="password" required placeholder="Create a strong password">
+                    <span class="password-toggle" id="regPasswordToggle">
+                        <i class="far fa-eye"></i>
+                    </span>
+                    <div class="password-strength">
+                        <div class="password-strength-fill" id="passwordStrength"></div>
+                    </div>
+                    <div class="password-hints">
+                        <p>Password must contain at least 8 characters, including uppercase, lowercase, number and special character.</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                    <span class="password-toggle" id="confirmPasswordToggle">
+                        <i class="far fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="farmName">Farm Name</label>
+                    <input type="text" id="farmName" name="farmName" required placeholder="Enter your farm name">
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsAgree" name="termsAgree" required>
+                    <label for="termsAgree">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Create Account</button>
+                
+                <div class="form-footer">
+                    <span>Already have an account? <a href="#" id="loginLink">Login here</a></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle between login and register forms
+            const registerLink = document.getElementById('registerLink');
+            const loginLink = document.getElementById('loginLink');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            });
+            
+            loginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            });
+            
+            // Password visibility toggling
+            const setupPasswordToggle = (toggleId, inputId) => {
+                const toggle = document.getElementById(toggleId);
+                const input = document.getElementById(inputId);
+                
+                toggle.addEventListener('click', function() {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        toggle.innerHTML = '<i class="far fa-eye-slash"></i>';
+                    } else {
+                        input.type = 'password';
+                        toggle.innerHTML = '<i class="far fa-eye"></i>';
+                    }
+                });
+            };
+            
+            setupPasswordToggle('passwordToggle', 'password');
+            setupPasswordToggle('regPasswordToggle', 'regPassword');
+            setupPasswordToggle('confirmPasswordToggle', 'confirmPassword');
+            
+            // Password strength indicator
+            const passwordInput = document.getElementById('regPassword');
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = passwordInput.value;
+                let strength = 0;
+                
+                // Check password strength
+                if (password.length >= 8) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                // Update strength bar
+                strengthBar.className = 'password-strength-fill';
+                if (password.length === 0) {
+                    strengthBar.style.width = '0%';
+                } else if (strength === 1) {
+                    strengthBar.classList.add('password-strength-weak');
+                } else if (strength === 2 || strength === 3) {
+                    strengthBar.classList.add('password-strength-medium');
+                } else if (strength === 4) {
+                    strengthBar.classList.add('password-strength-strong');
+                }
+            });
+            
+            // Form validation and submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Simple validation
+                if (!email || !password) {
+                    showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Simulate login process
+                showAlert('Logging in...', 'success');
+                // In a real application, you would make an API call here
+            });
+            
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('regName').value;
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const farmName = document.getElementById('farmName').value;
+                const termsAgreed = document.getElementById('termsAgree').checked;
+                
+                // Validation
+                if (!name || !email || !password || !confirmPassword || !farmName) {
+                    showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showAlert('Passwords do not match', 'error');
+                    return;
+                }
+                
+                if (!termsAgreed) {
+                    showAlert('Please agree to the terms and conditions', 'error');
+                    return;
+                }
+                
+                // Simulate registration process
+                showAlert('Account created successfully!', 'success');
+                // In a real application, you would make an API call here
+                
+                // Switch to login form after successful registration
+                setTimeout(() => {
+                    registerForm.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                }, 2000);
+            });
+            
+            // Forgot password functionality
+            document.getElementById('forgotPassword').addEventListener('click', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                
+                if (!email) {
+                    showAlert('Please enter your email address first', 'error');
+                    return;
+                }
+                
+                showAlert(`Password reset instructions sent to ${email}`, 'success');
+                // In a real application, you would make an API call here
+            });
+            
+            // Show alert function
+            function showAlert(message, type) {
+                const alertContainer = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.innerHTML = `
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                    ${message}
+                `;
+                
+                alertContainer.appendChild(alert);
+                
+                // Remove alert after 5 seconds
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            }
+            
+            // Language selector functionality
+            document.getElementById('languageSelect').addEventListener('change', function() {
+                // In a real application, this would change the language of the interface
+                showAlert(`Language changed to ${this.options[this.selectedIndex].text}`, 'success');
+            });
+        });
+    </script>
+</body>
+</html>

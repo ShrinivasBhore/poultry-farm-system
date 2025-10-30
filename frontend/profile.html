@@ -1,0 +1,1131 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Poultry Farm Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Profile Settings</h1>
+        </div>
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="personal">Personal Info</button>
+            <button class="tab-btn" data-tab="farm">Farm Details</button>
+            <button class="tab-btn" data-tab="security">Security</button>
+            <button class="tab-btn" data-tab="notifications">Notifications</button>
+            <button class="tab-btn" data-tab="backup">Backup & Restore</button>
+        </div>
+
+        <!-- Personal Info Tab -->
+        <div id="personal-tab" class="tab-content active">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Personal Information</h3>
+                    <button id="editPersonalBtn" class="btn btn-secondary">Edit</button>
+                </div>
+                
+                <form id="personalInfoForm" class="profile-form">
+                    <div class="profile-avatar">
+                        <div class="avatar-container">
+                            <img id="profileAvatar" src="#" alt="Profile Picture" onerror="this.style.display='none'">
+                            <div id="avatarPlaceholder" class="avatar-placeholder">
+                                <span id="avatarInitials">JD</span>
+                            </div>
+                        </div>
+                        <div class="avatar-actions">
+                            <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                            <button type="button" id="uploadAvatarBtn" class="btn btn-sm btn-outline">Change Photo</button>
+                            <button type="button" id="removeAvatarBtn" class="btn btn-sm btn-outline">Remove</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91 XXXXXXXXXX" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="3" placeholder="Enter your complete address" disabled></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" disabled>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" id="personalActions" style="display: none;">
+                        <button type="button" id="cancelPersonalBtn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Farm Details Tab -->
+        <div id="farm-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Farm Information</h3>
+                    <button id="editFarmBtn" class="btn btn-secondary">Edit</button>
+                </div>
+
+                <form id="farmInfoForm" class="profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="farmName">Farm Name *</label>
+                            <input type="text" id="farmName" name="farmName" required disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="farmType">Farm Type</label>
+                            <select id="farmType" name="farmType" disabled>
+                                <option value="">Select Type</option>
+                                <option value="broiler">Broiler Farm</option>
+                                <option value="layer">Layer Farm</option>
+                                <option value="mixed">Mixed Farm</option>
+                                <option value="breeder">Breeder Farm</option>
+                                <option value="hatchery">Hatchery</option>
+                                <option value="backyard">Backyard Poultry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="farmAddress">Farm Address</label>
+                        <textarea id="farmAddress" name="farmAddress" rows="3" placeholder="Enter complete farm address" disabled></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="farmCapacity">Total Capacity (Birds)</label>
+                            <input type="number" id="farmCapacity" name="farmCapacity" min="0" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="numberOfSheds">Number of Sheds</label>
+                            <input type="number" id="numberOfSheds" name="numberOfSheds" min="0" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="farmEstablished">Established Year</label>
+                            <input type="number" id="farmEstablished" name="farmEstablished" min="1900" max="2024" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="licenseNumber">FSSAI License Number</label>
+                            <input type="text" id="licenseNumber" name="licenseNumber" placeholder="FSSAI License Number" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="farmDescription">Farm Description</label>
+                        <textarea id="farmDescription" name="farmDescription" rows="4" placeholder="Describe your farm, breeds you raise, etc." disabled></textarea>
+                    </div>
+
+                    <div class="form-actions" id="farmActions" style="display: none;">
+                        <button type="button" id="cancelFarmBtn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Change Password</h3>
+                </div>
+
+                <form id="passwordForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password *</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password *</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                        <small class="form-text">Password must be at least 8 characters long</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password *</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Login Sessions</h3>
+                    <button id="refreshSessionsBtn" class="btn btn-secondary">Refresh</button>
+                </div>
+
+                <div id="activeSessions" class="sessions-list">
+                    <!-- Active sessions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Two-Factor Authentication</h3>
+                </div>
+
+                <div class="security-option">
+                    <div class="option-info">
+                        <h4>SMS Authentication</h4>
+                        <p>Receive verification codes via SMS</p>
+                    </div>
+                    <div class="option-action">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="smsAuth" name="smsAuth">
+                            <label for="smsAuth" class="toggle-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-option">
+                    <div class="option-info">
+                        <h4>Email Authentication</h4>
+                        <p>Receive verification codes via email</p>
+                    </div>
+                    <div class="option-action">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="emailAuth" name="emailAuth">
+                            <label for="emailAuth" class="toggle-label"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Notification Preferences</h3>
+                </div>
+
+                <form id="notificationsForm" class="profile-form">
+                    <div class="notification-section">
+                        <h4>Email Notifications</h4>
+                        
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Daily Summary</span>
+                                <span class="option-desc">Daily farm activity summary</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="dailySummary" name="dailySummary" checked>
+                                    <label for="dailySummary" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Low Feed Stock</span>
+                                <span class="option-desc">Alert when feed stock is running low</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="lowFeedStock" name="lowFeedStock" checked>
+                                    <label for="lowFeedStock" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Health Reminders</span>
+                                <span class="option-desc">Vaccination and health checkup reminders</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="healthReminders" name="healthReminders" checked>
+                                    <label for="healthReminders" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Sales Targets</span>
+                                <span class="option-desc">Monthly sales target notifications</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="salesTargets" name="salesTargets">
+                                    <label for="salesTargets" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notification-section">
+                        <h4>SMS Notifications</h4>
+                        
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Critical Alerts</span>
+                                <span class="option-desc">High mortality, disease outbreaks</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="criticalAlerts" name="criticalAlerts" checked>
+                                    <label for="criticalAlerts" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Payment Due</span>
+                                <span class="option-desc">Customer payment due reminders</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="paymentDue" name="paymentDue">
+                                    <label for="paymentDue" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="option-info">
+                                <span class="option-title">Weather Alerts</span>
+                                <span class="option-desc">Extreme weather condition warnings</span>
+                            </div>
+                            <div class="option-action">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="weatherAlerts" name="weatherAlerts" checked>
+                                    <label for="weatherAlerts" class="toggle-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notification-section">
+                        <h4>Notification Timing</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="summaryTime">Daily Summary Time</label>
+                                <input type="time" id="summaryTime" name="summaryTime" value="18:00">
+                            </div>
+                            <div class="form-group">
+                                <label for="reminderTime">Reminder Time</label>
+                                <input type="time" id="reminderTime" name="reminderTime" value="09:00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Preferences</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Backup & Restore Tab -->
+        <div id="backup-tab" class="tab-content">
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Data Backup</h3>
+                </div>
+
+                <div class="backup-section">
+                    <div class="backup-info">
+                        <h4>Automatic Backup</h4>
+                        <p>Your data is automatically backed up daily. Last backup: <span id="lastBackupTime">Loading...</span></p>
+                    </div>
+                    <div class="backup-actions">
+                        <button id="createBackupBtn" class="btn btn-primary">Create Backup Now</button>
+                        <button id="downloadBackupBtn" class="btn btn-secondary">Download Backup</button>
+                    </div>
+                </div>
+
+                <div class="backup-section">
+                    <div class="section-header">
+                        <h4>Backup History</h4>
+                    </div>
+                    <div class="table-container">
+                        <table id="backupHistoryTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Backup history will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Data Restore</h3>
+                </div>
+
+                <div class="restore-section">
+                    <div class="restore-warning">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-text">
+                            <h4>Warning</h4>
+                            <p>Restoring data will replace all current data. This action cannot be undone. Please create a backup before proceeding.</p>
+                        </div>
+                    </div>
+
+                    <form id="restoreForm" class="restore-form">
+                        <div class="form-group">
+                            <label for="restoreFile">Select Backup File</label>
+                            <input type="file" id="restoreFile" name="restoreFile" accept=".json,.sql">
+                            <small class="form-text">Supported formats: JSON, SQL</small>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="confirmRestore" name="confirmRestore" required>
+                                <label for="confirmRestore">I understand that this will replace all current data</label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-danger">Restore Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="section-header">
+                    <h3>Data Export</h3>
+                </div>
+
+                <div class="export-section">
+                    <p>Export your data for external use or migration to another system.</p>
+                    
+                    <form id="dataExportForm" class="export-form">
+                        <div class="form-group">
+                            <label>Select Data to Export</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="exportFlocks" name="exportData" value="flocks" checked>
+                                <label for="exportFlocks">Flocks</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="exportSales" name="exportData" value="sales" checked>
+                                <label for="exportSales">Sales</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="exportExpenses" name="exportData" value="expenses" checked>
+                                <label for="exportExpenses">Expenses</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="exportFeed" name="exportData" value="feed" checked>
+                                <label for="exportFeed">Feed Records</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exportFormat">Export Format</label>
+                            <select id="exportFormat" name="exportFormat">
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                                <option value="excel">Excel</option>
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Export Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Avatar Modal -->
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change Profile Picture</h2>
+                <span class="close" id="closeAvatarModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-upload-area">
+                    <div class="upload-preview">
+                        <img id="avatarPreview" src="#" alt="Avatar Preview" style="display: none;">
+                        <div id="uploadPlaceholder" class="upload-placeholder">
+                            <div class="upload-icon">📷</div>
+                            <p>Click to select or drag & drop image here</p>
+                            <small>Max size: 5MB. Formats: JPG, PNG, GIF</small>
+                        </div>
+                    </div>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                    <button type="button" id="selectImageBtn" class="btn btn-primary">Select Image</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('avatarModal')">Cancel</button>
+                <button type="button" id="saveAvatarBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+    
+    <script>
+        // Sample user data (in a real app, this would come from a backend)
+        let userData = {
+            personal: {
+                firstName: "Firs tName",
+                lastName: "Last Name", 
+                email: "email",
+                phone: "+91 .....",
+                address: "Address...",
+                dateOfBirth: "1985-06-15",
+                gender: "male",
+                avatar: null
+            },
+            farm: {
+                farmName: " Poultry Farm name",
+                farmType: "broiler",
+                farmAddress: "Farm Address ",
+                farmCapacity: 5000,
+                numberOfSheds: 4,
+                farmEstablished: 2015,
+                licenseNumber: "FSSAI123456789",
+                farmDescription: "A family-owned poultry farm specializing in organic free-range chickens."
+            },
+            security: {
+                twoFactorSMS: false,
+                twoFactorEmail: true
+            },
+            notifications: {
+                email: {
+                    dailySummary: true,
+                    lowFeedStock: true,
+                    healthReminders: true,
+                    salesTargets: false
+                },
+                sms: {
+                    criticalAlerts: true,
+                    paymentDue: false,
+                    weatherAlerts: true
+                },
+                timing: {
+                    summaryTime: "18:00",
+                    reminderTime: "09:00"
+                }
+            },
+            backup: {
+                lastBackup: new Date().toISOString(),
+                history: [
+                    { date: new Date().toISOString(), type: "Automatic", size: "2.4 MB", status: "Completed" },
+                    { date: new Date(Date.now() - 86400000).toISOString(), type: "Automatic", size: "2.3 MB", status: "Completed" },
+                    { date: new Date(Date.now() - 172800000).toISOString(), type: "Automatic", size: "2.3 MB", status: "Completed" },
+                    { date: new Date(Date.now() - 259200000).toISOString(), type: "Manual", size: "2.2 MB", status: "Completed" }
+                ]
+            },
+            sessions: [
+                { id: 1, device: "Chrome on Windows", location: "Bengaluru, India", lastActive: "2 hours ago", current: true },
+                { id: 2, device: "Safari on iPhone", location: "Mumbai, India", lastActive: "3 days ago", current: false },
+                { id: 3, device: "Firefox on Mac", location: "Delhi, India", lastActive: "1 week ago", current: false }
+            ]
+        };
+
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProfile();
+            loadProfileData();
+            setupEventListeners();
+        });
+
+        // Initialize Profile Page
+        function initializeProfile() {
+            // Set up tab switching
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Set up logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    // In a real app, this would redirect to logout endpoint
+                    showAlert('You have been logged out successfully.', 'success');
+                    setTimeout(() => {
+                        // Redirect to login page
+                        window.location.href = 'login.html';
+                    }, 1500);
+                }
+            });
+
+            // Initialize backup info
+            updateBackupInfo();
+        }
+
+        // Load profile data into forms
+        function loadProfileData() {
+            // Personal info
+            document.getElementById('firstName').value = userData.personal.firstName;
+            document.getElementById('lastName').value = userData.personal.lastName;
+            document.getElementById('email').value = userData.personal.email;
+            document.getElementById('phone').value = userData.personal.phone;
+            document.getElementById('address').value = userData.personal.address;
+            document.getElementById('dateOfBirth').value = userData.personal.dateOfBirth;
+            document.getElementById('gender').value = userData.personal.gender;
+            
+            // Set avatar initials
+            document.getElementById('avatarInitials').textContent = 
+                userData.personal.firstName.charAt(0) + userData.personal.lastName.charAt(0);
+
+            // Farm info
+            document.getElementById('farmName').value = userData.farm.farmName;
+            document.getElementById('farmType').value = userData.farm.farmType;
+            document.getElementById('farmAddress').value = userData.farm.farmAddress;
+            document.getElementById('farmCapacity').value = userData.farm.farmCapacity;
+            document.getElementById('numberOfSheds').value = userData.farm.numberOfSheds;
+            document.getElementById('farmEstablished').value = userData.farm.farmEstablished;
+            document.getElementById('licenseNumber').value = userData.farm.licenseNumber;
+            document.getElementById('farmDescription').value = userData.farm.farmDescription;
+
+            // Security settings
+            document.getElementById('smsAuth').checked = userData.security.twoFactorSMS;
+            document.getElementById('emailAuth').checked = userData.security.twoFactorEmail;
+
+            // Notification settings
+            document.getElementById('dailySummary').checked = userData.notifications.email.dailySummary;
+            document.getElementById('lowFeedStock').checked = userData.notifications.email.lowFeedStock;
+            document.getElementById('healthReminders').checked = userData.notifications.email.healthReminders;
+            document.getElementById('salesTargets').checked = userData.notifications.email.salesTargets;
+            document.getElementById('criticalAlerts').checked = userData.notifications.sms.criticalAlerts;
+            document.getElementById('paymentDue').checked = userData.notifications.sms.paymentDue;
+            document.getElementById('weatherAlerts').checked = userData.notifications.sms.weatherAlerts;
+            document.getElementById('summaryTime').value = userData.notifications.timing.summaryTime;
+            document.getElementById('reminderTime').value = userData.notifications.timing.reminderTime;
+
+            // Load active sessions
+            loadActiveSessions();
+
+            // Load backup history
+            loadBackupHistory();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Personal info form
+            document.getElementById('editPersonalBtn').addEventListener('click', enablePersonalFormEditing);
+            document.getElementById('cancelPersonalBtn').addEventListener('click', cancelPersonalFormEditing);
+            document.getElementById('personalInfoForm').addEventListener('submit', savePersonalInfo);
+
+            // Farm info form
+            document.getElementById('editFarmBtn').addEventListener('click', enableFarmFormEditing);
+            document.getElementById('cancelFarmBtn').addEventListener('click', cancelFarmFormEditing);
+            document.getElementById('farmInfoForm').addEventListener('submit', saveFarmInfo);
+
+            // Security form
+            document.getElementById('passwordForm').addEventListener('submit', changePassword);
+            document.getElementById('refreshSessionsBtn').addEventListener('click', loadActiveSessions);
+            document.getElementById('smsAuth').addEventListener('change', toggleTwoFactorAuth);
+            document.getElementById('emailAuth').addEventListener('change', toggleTwoFactorAuth);
+
+            // Notifications form
+            document.getElementById('notificationsForm').addEventListener('submit', saveNotificationPreferences);
+
+            // Backup & Restore
+            document.getElementById('createBackupBtn').addEventListener('click', createBackup);
+            document.getElementById('downloadBackupBtn').addEventListener('click', downloadBackup);
+            document.getElementById('restoreForm').addEventListener('submit', restoreData);
+            document.getElementById('dataExportForm').addEventListener('submit', exportData);
+
+            // Avatar handling
+            document.getElementById('uploadAvatarBtn').addEventListener('click', openAvatarModal);
+            document.getElementById('removeAvatarBtn').addEventListener('click', removeAvatar);
+            document.getElementById('selectImageBtn').addEventListener('click', () => document.getElementById('avatarFileInput').click());
+            document.getElementById('avatarFileInput').addEventListener('change', handleAvatarSelection);
+            document.getElementById('saveAvatarBtn').addEventListener('click', saveAvatar);
+            document.getElementById('closeAvatarModal').addEventListener('click', () => closeModal('avatarModal'));
+        }
+
+        // Tab switching function
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Activate selected tab
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        // Personal Info Functions
+        function enablePersonalFormEditing() {
+            const form = document.getElementById('personalInfoForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+            document.getElementById('personalActions').style.display = 'flex';
+            document.getElementById('editPersonalBtn').style.display = 'none';
+        }
+
+        function cancelPersonalFormEditing() {
+            const form = document.getElementById('personalInfoForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('personalActions').style.display = 'none';
+            document.getElementById('editPersonalBtn').style.display = 'block';
+            
+            // Reset form values
+            loadProfileData();
+        }
+
+        function savePersonalInfo(e) {
+            e.preventDefault();
+            
+            // Update user data with form values
+            userData.personal.firstName = document.getElementById('firstName').value;
+            userData.personal.lastName = document.getElementById('lastName').value;
+            userData.personal.email = document.getElementById('email').value;
+            userData.personal.phone = document.getElementById('phone').value;
+            userData.personal.address = document.getElementById('address').value;
+            userData.personal.dateOfBirth = document.getElementById('dateOfBirth').value;
+            userData.personal.gender = document.getElementById('gender').value;
+            
+            // Update avatar initials
+            document.getElementById('avatarInitials').textContent = 
+                userData.personal.firstName.charAt(0) + userData.personal.lastName.charAt(0);
+            
+            // In a real app, this would send data to the server
+            showAlert('Personal information updated successfully!', 'success');
+            
+            // Disable form again
+            cancelPersonalFormEditing();
+        }
+
+        // Farm Info Functions
+        function enableFarmFormEditing() {
+            const form = document.getElementById('farmInfoForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+            document.getElementById('farmActions').style.display = 'flex';
+            document.getElementById('editFarmBtn').style.display = 'none';
+        }
+
+        function cancelFarmFormEditing() {
+            const form = document.getElementById('farmInfoForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('farmActions').style.display = 'none';
+            document.getElementById('editFarmBtn').style.display = 'block';
+            
+            // Reset form values
+            loadProfileData();
+        }
+
+        function saveFarmInfo(e) {
+            e.preventDefault();
+            
+            // Update user data with form values
+            userData.farm.farmName = document.getElementById('farmName').value;
+            userData.farm.farmType = document.getElementById('farmType').value;
+            userData.farm.farmAddress = document.getElementById('farmAddress').value;
+            userData.farm.farmCapacity = document.getElementById('farmCapacity').value;
+            userData.farm.numberOfSheds = document.getElementById('numberOfSheds').value;
+            userData.farm.farmEstablished = document.getElementById('farmEstablished').value;
+            userData.farm.licenseNumber = document.getElementById('licenseNumber').value;
+            userData.farm.farmDescription = document.getElementById('farmDescription').value;
+            
+            // In a real app, this would send data to the server
+            showAlert('Farm information updated successfully!', 'success');
+            
+            // Disable form again
+            cancelFarmFormEditing();
+        }
+
+        // Security Functions
+        function changePassword(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Basic validation
+            if (newPassword.length < 8) {
+                showAlert('New password must be at least 8 characters long.', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match.', 'error');
+                return;
+            }
+            
+            // In a real app, this would verify current password and update it on the server
+            showAlert('Password updated successfully!', 'success');
+            
+            // Clear the form
+            document.getElementById('passwordForm').reset();
+        }
+
+        function loadActiveSessions() {
+            const sessionsContainer = document.getElementById('activeSessions');
+            sessionsContainer.innerHTML = '';
+            
+            userData.sessions.forEach(session => {
+                const sessionElement = document.createElement('div');
+                sessionElement.className = 'session-item';
+                sessionElement.innerHTML = `
+                    <div class="session-info">
+                        <h4>${session.device} ${session.current ? '(Current)' : ''}</h4>
+                        <p>${session.location} • Last active: ${session.lastActive}</p>
+                    </div>
+                    <div class="session-actions">
+                        ${!session.current ? '<button class="btn btn-sm btn-danger" onclick="revokeSession(' + session.id + ')">Revoke</button>' : ''}
+                    </div>
+                `;
+                sessionsContainer.appendChild(sessionElement);
+            });
+        }
+
+        function revokeSession(sessionId) {
+            if (confirm('Are you sure you want to revoke this session?')) {
+                // In a real app, this would send a request to the server
+                userData.sessions = userData.sessions.filter(session => session.id !== sessionId);
+                loadActiveSessions();
+                showAlert('Session revoked successfully.', 'success');
+            }
+        }
+
+        function toggleTwoFactorAuth(e) {
+            const method = e.target.id;
+            const enabled = e.target.checked;
+            
+            // Update user data
+            userData.security[method === 'smsAuth' ? 'twoFactorSMS' : 'twoFactorEmail'] = enabled;
+            
+            // In a real app, this would update the setting on the server
+            showAlert(
+                `${method === 'smsAuth' ? 'SMS' : 'Email'} two-factor authentication ${enabled ? 'enabled' : 'disabled'}.`, 
+                'success'
+            );
+        }
+
+        // Notifications Functions
+        function saveNotificationPreferences(e) {
+            e.preventDefault();
+            
+            // Update notification preferences
+            userData.notifications.email.dailySummary = document.getElementById('dailySummary').checked;
+            userData.notifications.email.lowFeedStock = document.getElementById('lowFeedStock').checked;
+            userData.notifications.email.healthReminders = document.getElementById('healthReminders').checked;
+            userData.notifications.email.salesTargets = document.getElementById('salesTargets').checked;
+            
+            userData.notifications.sms.criticalAlerts = document.getElementById('criticalAlerts').checked;
+            userData.notifications.sms.paymentDue = document.getElementById('paymentDue').checked;
+            userData.notifications.sms.weatherAlerts = document.getElementById('weatherAlerts').checked;
+            
+            userData.notifications.timing.summaryTime = document.getElementById('summaryTime').value;
+            userData.notifications.timing.reminderTime = document.getElementById('reminderTime').value;
+            
+            // In a real app, this would send the preferences to the server
+            showAlert('Notification preferences updated successfully!', 'success');
+        }
+
+        // Backup & Restore Functions
+        function updateBackupInfo() {
+            const lastBackupTime = new Date(userData.backup.lastBackup);
+            document.getElementById('lastBackupTime').textContent = 
+                lastBackupTime.toLocaleDateString('en-IN') + ' ' + lastBackupTime.toLocaleTimeString('en-IN');
+        }
+
+        function loadBackupHistory() {
+            const tableBody = document.querySelector('#backupHistoryTable tbody');
+            tableBody.innerHTML = '';
+            
+            userData.backup.history.forEach(backup => {
+                const backupDate = new Date(backup.date);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${backupDate.toLocaleDateString('en-IN')} ${backupDate.toLocaleTimeString('en-IN')}</td>
+                    <td>${backup.type}</td>
+                    <td>${backup.size}</td>
+                    <td>${backup.status}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="downloadBackupById('${backup.date}')">Download</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function createBackup() {
+            // Show loading state
+            const originalText = document.getElementById('createBackupBtn').textContent;
+            document.getElementById('createBackupBtn').textContent = 'Creating Backup...';
+            document.getElementById('createBackupBtn').disabled = true;
+            
+            // Simulate backup process
+            setTimeout(() => {
+                // Add new backup to history
+                const newBackup = {
+                    date: new Date().toISOString(),
+                    type: "Manual",
+                    size: "2.5 MB",
+                    status: "Completed"
+                };
+                
+                userData.backup.history.unshift(newBackup);
+                userData.backup.lastBackup = new Date().toISOString();
+                
+                // Update UI
+                updateBackupInfo();
+                loadBackupHistory();
+                
+                // Restore button state
+                document.getElementById('createBackupBtn').textContent = originalText;
+                document.getElementById('createBackupBtn').disabled = false;
+                
+                showAlert('Backup created successfully!', 'success');
+            }, 1500);
+        }
+
+        function downloadBackup() {
+            // In a real app, this would generate and download a backup file
+            showAlert('Backup download started.', 'info');
+            
+            // Simulate file download
+            setTimeout(() => {
+                showAlert('Backup downloaded successfully.', 'success');
+            }, 1000);
+        }
+
+        function downloadBackupById(backupId) {
+            // In a real app, this would download the specific backup
+            showAlert(`Downloading backup from ${new Date(backupId).toLocaleString('en-IN')}`, 'info');
+        }
+
+        function restoreData(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('restoreFile');
+            if (!fileInput.files.length) {
+                showAlert('Please select a backup file to restore.', 'error');
+                return;
+            }
+            
+            if (!confirm('WARNING: This will replace all your current data. Are you sure you want to continue?')) {
+                return;
+            }
+            
+            // Show loading state
+            const originalText = e.submitter.textContent;
+            e.submitter.textContent = 'Restoring...';
+            e.submitter.disabled = true;
+            
+            // Simulate restore process
+            setTimeout(() => {
+                // Restore button state
+                e.submitter.textContent = originalText;
+                e.submitter.disabled = false;
+                
+                // Reset form
+                document.getElementById('restoreForm').reset();
+                
+                showAlert('Data restored successfully!', 'success');
+            }, 2000);
+        }
+
+        function exportData(e) {
+            e.preventDefault();
+            
+            const format = document.getElementById('exportFormat').value;
+            const selectedData = [];
+            document.querySelectorAll('input[name="exportData"]:checked').forEach(checkbox => {
+                selectedData.push(checkbox.value);
+            });
+            
+            if (selectedData.length === 0) {
+                showAlert('Please select at least one data type to export.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const originalText = e.submitter.textContent;
+            e.submitter.textContent = 'Exporting...';
+            e.submitter.disabled = true;
+            
+            // Simulate export process
+            setTimeout(() => {
+                // Restore button state
+                e.submitter.textContent = originalText;
+                e.submitter.disabled = false;
+                
+                showAlert(`Data exported as ${format.toUpperCase()} successfully!`, 'success');
+            }, 1500);
+        }
+
+        // Avatar Functions
+        function openAvatarModal() {
+            document.getElementById('avatarModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function handleAvatarSelection(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showAlert('Please select an image file.', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('Image must be less than 5MB.', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+                document.getElementById('avatarPreview').style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAvatar() {
+            const preview = document.getElementById('avatarPreview');
+            if (preview.style.display === 'none') {
+                showAlert('Please select an image first.', 'error');
+                return;
+            }
+            
+            // In a real app, this would upload the image to the server
+            document.getElementById('profileAvatar').src = preview.src;
+            document.getElementById('profileAvatar').style.display = 'block';
+            document.getElementById('avatarPlaceholder').style.display = 'none';
+            
+            closeModal('avatarModal');
+            showAlert('Profile picture updated successfully!', 'success');
+        }
+
+        function removeAvatar() {
+            document.getElementById('profileAvatar').style.display = 'none';
+            document.getElementById('avatarPlaceholder').style.display = 'flex';
+            showAlert('Profile picture removed.', 'info');
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${message}</span>
+                <span class="close-alert" onclick="this.parentElement.remove()">&times;</span>
+            `;
+            alertContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Close modals if clicked outside
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = "none";
+                }
+            }
+        };
+    </script>
+</body>
+</html>

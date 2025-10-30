@@ -1,0 +1,1471 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flock Management - Poultry Farm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+     
+</head>
+<body>
+      <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-kiwi-bird"></i> Flock Management</h1>
+            <div class="header-actions">
+                <span id="totalFlocks" class="info-badge">0 Flocks</span>
+                <span id="totalBirds" class="info-badge">0 Birds</span>
+                <button id="addFlockBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Flock
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <input type="text" id="flockSearch" placeholder="🔍 Search flocks by batch, breed, or house...">
+            </div>
+            <div class="filter-controls">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="sold">Sold</option>
+                    <option value="deceased">Deceased</option>
+                </select>
+                <select id="breedFilter" class="form-select">
+                    <option value="">All Breeds</option>
+                    <option value="broiler">Broiler</option>
+                    <option value="layer">Layer</option>
+                    <option value="country">Country Chicken</option>
+                </select>
+                <select id="sortBy" class="form-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="count_high">Highest Count</option>
+                    <option value="count_low">Lowest Count</option>
+                    <option value="age">By Age</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Flocks Grid -->
+        <div id="flocksGrid" class="flocks-grid">
+            <div class="empty-state">
+                <i class="fas fa-kiwi-bird"></i>
+                <h3>No flocks found</h3>
+                <p>Start by adding your first flock to begin tracking</p>
+                <button class="btn btn-primary" onclick="document.getElementById('addFlockBtn').click()">
+                    <i class="fas fa-plus"></i> Add First Flock
+                </button>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div id="loadMoreContainer" style="text-align: center; margin: 2rem 0; display: none;">
+            <button id="loadMoreBtn" class="btn btn-outline">Load More Flocks</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Flock Modal -->
+    <div id="flockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"><i class="fas fa-plus-circle"></i> Add New Flock</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form id="flockForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="flockBatch">Batch Number *</label>
+                        <input type="text" id="flockBatch" name="batchNumber" required placeholder="e.g., B001, L001">
+                    </div>
+                    <div class="form-group">
+                        <label for="flockBreed">Breed Type *</label>
+                        <select id="flockBreed" name="breed" required>
+                            <option value="">Select Breed</option>
+                            <option value="broiler">Broiler (Meat)</option>
+                            <option value="layer">Layer (Eggs)</option>
+                            <option value="country">Country Chicken</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="initialCount">Initial Count *</label>
+                        <input type="number" id="initialCount" name="initialCount" required min="1" placeholder="Number of birds">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseDate">Purchase Date *</label>
+                        <input type="date" id="purchaseDate" name="purchaseDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchasePrice">Purchase Price per Bird (₹) *</label>
+                        <input type="number" id="purchasePrice" name="purchasePrice" required min="0" step="0.01" placeholder="e.g., 45.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier">Supplier Name</label>
+                        <input type="text" id="supplier" name="supplier" placeholder="Supplier or hatchery name">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="houseNumber">House/Shed Number</label>
+                        <input type="text" id="houseNumber" name="houseNumber" placeholder="e.g., House 1, Shed A">
+                    </div>
+                    <div class="form-group">
+                        <label for="expectedMaturityDate">Expected Market Date</label>
+                        <input type="date" id="expectedMaturityDate" name="expectedMaturityDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any additional information about this flock..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Flock
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Flock Details Modal -->
+    <div id="flockDetailsModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="detailsModalTitle"><i class="fas fa-info-circle"></i> Flock Details</h2>
+                <span class="close" id="closeDetailsModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="details-tabs">
+                    <button class="tab-btn active" data-tab="overview">
+                        <i class="fas fa-chart-pie"></i> Overview
+                    </button>
+                    <button class="tab-btn" data-tab="health">
+                        <i class="fas fa-heartbeat"></i> Health Records
+                    </button>
+                    <button class="tab-btn" data-tab="feed">
+                        <i class="fas fa-wheat-alt"></i> Feed History
+                    </button>
+                    <button class="tab-btn" data-tab="mortality">
+                        <i class="fas fa-skull-crossbones"></i> Mortality
+                    </button>
+                    <button class="tab-btn" data-tab="finance">
+                        <i class="fas fa-rupee-sign"></i> Finance
+                    </button>
+                </div>
+
+                <div id="overview-tab" class="tab-content active">
+                    <div id="flockOverview"></div>
+                </div>
+
+                <div id="health-tab" class="tab-content">
+                    <div class="section-header">
+                        <h3><i class="fas fa-heartbeat"></i> Health Records</h3>
+                        <button class="btn btn-sm btn-primary" id="addHealthRecordBtn">
+                            <i class="fas fa-plus"></i> Add Record
+                        </button>
+                    </div>
+                    <div id="healthRecords"></div>
+                </div>
+
+                <div id="feed-tab" class="tab-content">
+                    <div class="section-header">
+                        <h3><i class="fas fa-wheat-alt"></i> Feed History</h3>
+                        <button class="btn btn-sm btn-primary" onclick="window.location.href='feed.html'">
+                            <i class="fas fa-plus"></i> Add Feed Record
+                        </button>
+                    </div>
+                    <div id="feedHistory"></div>
+                </div>
+
+                <div id="mortality-tab" class="tab-content">
+                    <div class="section-header">
+                        <h3><i class="fas fa-skull-crossbones"></i> Mortality Records</h3>
+                        <button class="btn btn-sm btn-primary" id="addMortalityBtn">
+                            <i class="fas fa-plus"></i> Add Record
+                        </button>
+                    </div>
+                    <div id="mortalityRecords"></div>
+                </div>
+
+                <div id="finance-tab" class="tab-content">
+                    <div class="section-header">
+                        <h3><i class="fas fa-rupee-sign"></i> Financial Summary</h3>
+                    </div>
+                    <div id="financeData"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Count Modal -->
+    <div id="updateCountModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Update Bird Count</h2>
+                <span class="close" id="closeUpdateModal">&times;</span>
+            </div>
+            <form id="updateCountForm" class="modal-body">
+                <input type="hidden" id="updateFlockId" name="flockId">
+                
+                <div class="form-group">
+                    <label for="updateType">Update Type *</label>
+                    <select id="updateType" name="updateType" required>
+                        <option value="">Select Type</option>
+                        <option value="mortality">Mortality</option>
+                        <option value="sale">Sale</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="correction">Count Correction</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="countChange">Count Change *</label>
+                    <input type="number" id="countChange" name="countChange" required min="1" placeholder="Number of birds">
+                    <small class="form-help">Enter the number of birds to reduce from current count</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateDate">Date *</label>
+                    <input type="date" id="updateDate" name="updateDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="updateReason">Reason</label>
+                    <textarea id="updateReason" name="reason" rows="2" placeholder="Optional details about this update..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('updateCountModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Count
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Real-time Indicator -->
+    <!-- <div class="real-time-indicator">
+        <div class="pulse"></div>
+        <span>Real-time</span>
+    </div> -->
+
+    <div id="alertContainer"></div>
+    
+    <script>
+        // Advanced Real-Time Flock Management System
+        class FlockManager {
+            constructor() {
+                this.flocks = this.loadFlocks();
+                this.filteredFlocks = [...this.flocks];
+                this.currentPage = 1;
+                this.itemsPerPage = 12;
+                this.isEditing = false;
+                this.currentFlockId = null;
+                
+                this.initializeEventListeners();
+                this.setupRealTimeUpdates();
+            }
+
+            // Data Management
+            loadFlocks() {
+                try {
+                    return JSON.parse(localStorage.getItem('flocks') || '[]');
+                } catch (e) {
+                    console.error('Error loading flocks:', e);
+                    return [];
+                }
+            }
+
+            saveFlocks() {
+                try {
+                    localStorage.setItem('flocks', JSON.stringify(this.flocks));
+                    this.triggerDataUpdate();
+                } catch (e) {
+                    console.error('Error saving flocks:', e);
+                    this.showAlert('Error saving data', 'error');
+                }
+            }
+
+            triggerDataUpdate() {
+                // Trigger event for other components to update
+                window.dispatchEvent(new CustomEvent('flockDataUpdated'));
+                // Update dashboard if available
+                if (window.dataManager) {
+                    window.dataManager.triggerDataUpdate();
+                }
+            }
+
+            // Flock CRUD Operations
+            addFlock(flockData) {
+                const flock = {
+                    id: Date.now(),
+                    batchNumber: flockData.batchNumber,
+                    breed: flockData.breed,
+                    initialCount: parseInt(flockData.initialCount),
+                    currentCount: parseInt(flockData.initialCount),
+                    purchaseDate: flockData.purchaseDate,
+                    purchasePrice: parseFloat(flockData.purchasePrice),
+                    supplier: flockData.supplier || '',
+                    houseNumber: flockData.houseNumber || '',
+                    expectedMaturityDate: flockData.expectedMaturityDate || null,
+                    notes: flockData.notes || '',
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    healthRecords: [],
+                    mortalityRecords: [],
+                    countUpdates: []
+                };
+
+                this.flocks.unshift(flock);
+                this.saveFlocks();
+                
+                // Add activity
+                this.addActivity('flock', `New flock added - Batch ${flock.batchNumber} (${flock.breed}, ${flock.initialCount} birds)`);
+                
+                // Generate alerts for new flock
+                this.generateFlockAlerts(flock);
+                
+                this.showAlert('Flock added successfully!', 'success');
+                return flock.id;
+            }
+
+            updateFlock(flockId, flockData) {
+                const index = this.flocks.findIndex(f => f.id === flockId);
+                if (index === -1) return false;
+
+                const flock = this.flocks[index];
+                const oldData = { ...flock };
+
+                // Update flock data
+                Object.keys(flockData).forEach(key => {
+                    if (key !== 'id' && flockData[key] !== undefined) {
+                        flock[key] = flockData[key];
+                    }
+                });
+
+                flock.updatedAt = new Date().toISOString();
+                this.saveFlocks();
+
+                // Log activity for significant changes
+                if (oldData.batchNumber !== flock.batchNumber || oldData.breed !== flock.breed) {
+                    this.addActivity('flock', `Flock updated - Batch ${flock.batchNumber} (${flock.breed})`);
+                }
+
+                this.showAlert('Flock updated successfully!', 'success');
+                return true;
+            }
+
+            updateFlockCount(flockId, updateData) {
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock) return false;
+
+                const update = {
+                    id: Date.now(),
+                    type: updateData.updateType,
+                    countChange: parseInt(updateData.countChange),
+                    date: updateData.updateDate,
+                    reason: updateData.reason || '',
+                    timestamp: new Date().toISOString()
+                };
+
+                // Update current count
+                const previousCount = flock.currentCount;
+                flock.currentCount = Math.max(0, flock.currentCount - update.countChange);
+                
+                // Add to update history
+                if (!flock.countUpdates) flock.countUpdates = [];
+                flock.countUpdates.push(update);
+
+                // Handle mortality records
+                if (updateData.updateType === 'mortality') {
+                    if (!flock.mortalityRecords) flock.mortalityRecords = [];
+                    flock.mortalityRecords.push({
+                        id: Date.now(),
+                        date: updateData.updateDate,
+                        count: update.countChange,
+                        cause: updateData.reason || 'Not specified',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                // Update status if all birds are gone
+                if (flock.currentCount === 0) {
+                    flock.status = updateData.updateType === 'sale' ? 'sold' : 'deceased';
+                }
+
+                flock.updatedAt = new Date().toISOString();
+                this.saveFlocks();
+
+                // Add activity
+                this.addActivity('flock', 
+                    `Flock count updated - Batch ${flock.batchNumber}: ${previousCount} → ${flock.currentCount} birds (${updateData.updateType})`);
+
+                // Generate mortality alert if rate is high
+                if (updateData.updateType === 'mortality') {
+                    const mortalityRate = ((flock.initialCount - flock.currentCount) / flock.initialCount) * 100;
+                    if (mortalityRate > 5) {
+                        this.addAlert('warning', `High mortality rate detected in Flock ${flock.batchNumber}: ${mortalityRate.toFixed(1)}%`);
+                    }
+                }
+
+                this.showAlert('Flock count updated successfully!', 'success');
+                return true;
+            }
+
+            deleteFlock(flockId) {
+                const flockIndex = this.flocks.findIndex(f => f.id === flockId);
+                if (flockIndex === -1) return false;
+
+                const flock = this.flocks[flockIndex];
+                this.flocks.splice(flockIndex, 1);
+                this.saveFlocks();
+
+                this.addActivity('flock', `Flock deleted - Batch ${flock.batchNumber} (${flock.breed})`);
+                this.showAlert('Flock deleted successfully!', 'success');
+                return true;
+            }
+
+            // Search and Filter
+            filterFlocks() {
+                const searchTerm = document.getElementById('flockSearch').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                const breedFilter = document.getElementById('breedFilter').value;
+                const sortBy = document.getElementById('sortBy').value;
+
+                let filtered = [...this.flocks];
+
+                // Apply filters
+                if (searchTerm) {
+                    filtered = filtered.filter(flock =>
+                        flock.batchNumber.toLowerCase().includes(searchTerm) ||
+                        flock.breed.toLowerCase().includes(searchTerm) ||
+                        (flock.houseNumber && flock.houseNumber.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                if (statusFilter) {
+                    filtered = filtered.filter(flock => flock.status === statusFilter);
+                }
+
+                if (breedFilter) {
+                    filtered = filtered.filter(flock => flock.breed === breedFilter);
+                }
+
+                // Apply sorting
+                filtered.sort((a, b) => {
+                    switch (sortBy) {
+                        case 'oldest':
+                            return new Date(a.purchaseDate) - new Date(b.purchaseDate);
+                        case 'count_high':
+                            return b.currentCount - a.currentCount;
+                        case 'count_low':
+                            return a.currentCount - b.currentCount;
+                        case 'age':
+                            return new Date(a.purchaseDate) - new Date(b.purchaseDate);
+                        default: // newest
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                    }
+                });
+
+                this.filteredFlocks = filtered;
+                this.currentPage = 1;
+                this.renderFlocks();
+                this.updateSummary();
+            }
+
+            // Rendering
+            renderFlocks() {
+                const container = document.getElementById('flocksGrid');
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                const pageFlocks = this.filteredFlocks.slice(startIndex, endIndex);
+
+                if (this.filteredFlocks.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-kiwi-bird"></i>
+                            <h3>No flocks found</h3>
+                            <p>Start by adding your first flock to begin tracking</p>
+                            <button class="btn btn-primary" onclick="flockManager.openAddModal()">
+                                <i class="fas fa-plus"></i> Add First Flock
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('loadMoreContainer').style.display = 'none';
+                    return;
+                }
+
+                if (this.currentPage === 1) {
+                    container.innerHTML = '';
+                }
+
+                pageFlocks.forEach(flock => {
+                    const flockCard = this.createFlockCard(flock);
+                    container.appendChild(flockCard);
+                });
+
+                // Show/hide load more button
+                const hasMore = endIndex < this.filteredFlocks.length;
+                const loadMoreContainer = document.getElementById('loadMoreContainer');
+                loadMoreContainer.style.display = hasMore ? 'block' : 'none';
+            }
+
+            createFlockCard(flock) {
+                const card = document.createElement('div');
+                card.className = `flock-card ${flock.breed} ${flock.status !== 'active' ? 'inactive' : ''}`;
+
+                const age = this.calculateAge(flock.purchaseDate);
+                const progress = this.calculateProgress(flock);
+                const mortalityRate = ((flock.initialCount - flock.currentCount) / flock.initialCount) * 100;
+
+                card.innerHTML = `
+                    <div class="flock-status status-${flock.status}">${flock.status}</div>
+                    
+                    <div class="flock-header">
+                        <div>
+                            <h3 class="flock-title">${flock.breed.charAt(0).toUpperCase() + flock.breed.slice(1)} Flock</h3>
+                            <p class="flock-batch">Batch: ${flock.batchNumber}</p>
+                        </div>
+                    </div>
+
+                    <div class="flock-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${flock.currentCount.toLocaleString()}</div>
+                            <div class="stat-label">Current Count</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${age} days</div>
+                            <div class="stat-label">Age</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${mortalityRate.toFixed(1)}%</div>
+                            <div class="stat-label">Mortality</div>
+                        </div>
+                        ${flock.houseNumber ? `
+                            <div class="stat-item">
+                                <div class="stat-value">${flock.houseNumber}</div>
+                                <div class="stat-label">House</div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${flock.status === 'active' ? `
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Growth Progress</span>
+                                <span>${progress.percentage}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                            </div>
+                            <small style="color: #666; margin-top: 0.5rem; display: block;">
+                                ${progress.description}
+                            </small>
+                        </div>
+                    ` : ''}
+
+                    <div class="flock-actions">
+                        <button class="action-btn btn-view" onclick="flockManager.viewFlockDetails(${flock.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${flock.status === 'active' ? `
+                            <button class="action-btn btn-update" onclick="flockManager.openUpdateModal(${flock.id})">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                            <button class="action-btn btn-health" onclick="flockManager.addHealthRecord(${flock.id})">
+                                <i class="fas fa-heartbeat"></i> Health
+                            </button>
+                            <button class="action-btn btn-feed" onclick="window.location.href='feed.html?flock=${flock.id}'">
+                                <i class="fas fa-wheat-alt"></i> Feed
+                            </button>
+                        ` : `
+                            <button class="action-btn btn-update" onclick="flockManager.editFlock(${flock.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        `}
+                    </div>
+                `;
+
+                return card;
+            }
+
+            // Utility Functions
+            calculateAge(purchaseDate) {
+                const purchase = new Date(purchaseDate);
+                const today = new Date();
+                return Math.floor((today - purchase) / (1000 * 60 * 60 * 24));
+            }
+
+            calculateProgress(flock) {
+                const age = this.calculateAge(flock.purchaseDate);
+                let targetAge, description;
+
+                if (flock.breed === 'broiler') {
+                    targetAge = 45;
+                    description = age < 45 ? `${45 - age} days to market` : 'Ready for market';
+                } else if (flock.breed === 'layer') {
+                    targetAge = 140;
+                    if (age < 140) {
+                        description = `${140 - age} days to point of lay`;
+                    } else {
+                        description = 'In production';
+                    }
+                } else {
+                    targetAge = 120;
+                    description = age < 120 ? `${120 - age} days to maturity` : 'Mature';
+                }
+
+                const percentage = Math.min(100, Math.round((age / targetAge) * 100));
+                return { percentage, description };
+            }
+
+            updateSummary() {
+                const totalFlocks = this.filteredFlocks.length;
+                const totalBirds = this.filteredFlocks.reduce((sum, flock) => sum + flock.currentCount, 0);
+
+                document.getElementById('totalFlocks').textContent = `${totalFlocks} Flocks`;
+                document.getElementById('totalBirds').textContent = `${totalBirds.toLocaleString()} Birds`;
+            }
+
+            // Modal Management
+            openAddModal() {
+                this.isEditing = false;
+                this.currentFlockId = null;
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Flock';
+                document.getElementById('flockForm').reset();
+                document.getElementById('purchaseDate').value = new Date().toISOString().split('T')[0];
+                this.showModal('flockModal');
+            }
+
+            editFlock(flockId) {
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock) return;
+
+                this.isEditing = true;
+                this.currentFlockId = flockId;
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Flock';
+                
+                // Populate form
+                document.getElementById('flockBatch').value = flock.batchNumber;
+                document.getElementById('flockBreed').value = flock.breed;
+                document.getElementById('initialCount').value = flock.initialCount;
+                document.getElementById('purchaseDate').value = flock.purchaseDate;
+                document.getElementById('purchasePrice').value = flock.purchasePrice;
+                document.getElementById('supplier').value = flock.supplier || '';
+                document.getElementById('houseNumber').value = flock.houseNumber || '';
+                document.getElementById('expectedMaturityDate').value = flock.expectedMaturityDate || '';
+                document.getElementById('notes').value = flock.notes || '';
+
+                this.showModal('flockModal');
+            }
+
+            openUpdateModal(flockId) {
+                this.currentFlockId = flockId;
+                document.getElementById('updateFlockId').value = flockId;
+                document.getElementById('updateCountForm').reset();
+                document.getElementById('updateDate').value = new Date().toISOString().split('T')[0];
+                this.showModal('updateCountModal');
+            }
+
+            viewFlockDetails(flockId) {
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock) return;
+
+                this.currentFlockId = flockId;
+                document.getElementById('detailsModalTitle').innerHTML = 
+                    `<i class="fas fa-info-circle"></i> Flock Details - Batch ${flock.batchNumber}`;
+
+                this.renderFlockOverview(flock);
+                this.renderHealthRecords(flock);
+                this.renderFeedHistory(flock);
+                this.renderMortalityRecords(flock);
+                this.renderFinanceData(flock);
+
+                this.showModal('flockDetailsModal');
+            }
+
+            renderFlockOverview(flock) {
+                const age = this.calculateAge(flock.purchaseDate);
+                const progress = this.calculateProgress(flock);
+                const totalInvestment = flock.initialCount * flock.purchasePrice;
+                const mortalityRate = ((flock.initialCount - flock.currentCount) / flock.initialCount) * 100;
+
+                document.getElementById('flockOverview').innerHTML = `
+                    <div class="overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <div class="overview-card" style="padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">Basic Information</h4>
+                            <p><strong>Batch:</strong> ${flock.batchNumber}</p>
+                            <p><strong>Breed:</strong> ${flock.breed.charAt(0).toUpperCase() + flock.breed.slice(1)}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-${flock.status}">${flock.status.charAt(0).toUpperCase() + flock.status.slice(1)}</span></p>
+                            <p><strong>Age:</strong> ${age} days</p>
+                            ${flock.houseNumber ? `<p><strong>House:</strong> ${flock.houseNumber}</p>` : ''}
+                        </div>
+                        
+                        <div class="overview-card" style="padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">Count Statistics</h4>
+                            <p><strong>Initial Count:</strong> ${flock.initialCount.toLocaleString()}</p>
+                            <p><strong>Current Count:</strong> ${flock.currentCount.toLocaleString()}</p>
+                            <p><strong>Total Losses:</strong> ${(flock.initialCount - flock.currentCount).toLocaleString()}</p>
+                            <p><strong>Mortality Rate:</strong> ${mortalityRate.toFixed(1)}%</p>
+                            <p><strong>Survival Rate:</strong> ${(100 - mortalityRate).toFixed(1)}%</p>
+                        </div>
+                        
+                        <div class="overview-card" style="padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">Financial Overview</h4>
+                            <p><strong>Purchase Price:</strong> ₹${flock.purchasePrice.toFixed(2)}/bird</p>
+                            <p><strong>Total Investment:</strong> ₹${totalInvestment.toLocaleString()}</p>
+                            ${flock.supplier ? `<p><strong>Supplier:</strong> ${flock.supplier}</p>` : ''}
+                            <p><strong>Purchase Date:</strong> ${new Date(flock.purchaseDate).toLocaleDateString('en-IN')}</p>
+                        </div>
+                        
+                        <div class="overview-card" style="padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">Growth Progress</h4>
+                            <div style="margin: 1rem 0;">
+                                <div class="progress-label">
+                                    <span>${progress.description}</span>
+                                    <span>${progress.percentage}%</span>
+                                </div>
+                                <div class="progress-bar" style="margin-top: 0.5rem;">
+                                    <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                                </div>
+                            </div>
+                            ${flock.expectedMaturityDate ? `<p><strong>Expected Market:</strong> ${new Date(flock.expectedMaturityDate).toLocaleDateString('en-IN')}</p>` : ''}
+                        </div>
+                    </div>
+
+                    ${flock.notes ? `
+                        <div class="notes-section" style="margin-top: 2rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #333;">Notes</h4>
+                            <p style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0;">${flock.notes}</p>
+                        </div>
+                    ` : ''}
+
+                    <div class="quick-actions" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        ${flock.status === 'active' ? `
+                            <button class="btn btn-primary" onclick="flockManager.openUpdateModal(${flock.id})">
+                                <i class="fas fa-edit"></i> Update Count
+                            </button>
+                            <button class="btn btn-success" onclick="flockManager.addHealthRecord(${flock.id})">
+                                <i class="fas fa-heartbeat"></i> Add Health Record
+                            </button>
+                            <button class="btn btn-warning" onclick="window.location.href='feed.html?flock=${flock.id}'">
+                                <i class="fas fa-wheat-alt"></i> Record Feed
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-outline" onclick="flockManager.editFlock(${flock.id})">
+                            <i class="fas fa-edit"></i> Edit Details
+                        </button>
+                        <button class="btn btn-danger" onclick="flockManager.confirmDelete(${flock.id})" style="margin-left: auto;">
+                            <i class="fas fa-trash"></i> Delete Flock
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderHealthRecords(flock) {
+                const healthRecords = flock.healthRecords || [];
+                const container = document.getElementById('healthRecords');
+
+                if (healthRecords.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <i class="fas fa-heartbeat" style="font-size: 2rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <p>No health records found</p>
+                            <button class="btn btn-primary" onclick="flockManager.addHealthRecord(${flock.id})">
+                                <i class="fas fa-plus"></i> Add First Health Record
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = healthRecords
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(record => `
+                        <div class="record-item" style="padding: 1rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <h5 style="margin: 0 0 0.5rem 0; color: #333;">${record.type || 'Health Check'}</h5>
+                                    <p style="margin: 0 0 0.5rem 0;">${record.description || 'No description'}</p>
+                                    <small style="color: #666;">
+                                        Date: ${new Date(record.date).toLocaleDateString('en-IN')} | 
+                                        Recorded: ${new Date(record.timestamp).toLocaleString('en-IN')}
+                                    </small>
+                                </div>
+                                <button class="btn btn-sm btn-danger" onclick="flockManager.deleteHealthRecord(${flock.id}, ${record.id})" title="Delete Record">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            renderFeedHistory(flock) {
+                const feedRecords = JSON.parse(localStorage.getItem('feedRecords') || '[]')
+                    .filter(record => record.flockId === flock.id)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const container = document.getElementById('feedHistory');
+
+                if (feedRecords.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <i class="fas fa-wheat-alt" style="font-size: 2rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <p>No feed records found</p>
+                            <button class="btn btn-primary" onclick="window.location.href='feed.html?flock=${flock.id}'">
+                                <i class="fas fa-plus"></i> Add Feed Record
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const totalFeed = feedRecords.reduce((sum, record) => sum + (record.quantity || 0), 0);
+                const avgFeedPerBird = totalFeed / flock.initialCount;
+
+                container.innerHTML = `
+                    <div class="feed-summary" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #333;">${totalFeed.toFixed(1)} kg</div>
+                                <div style="font-size: 0.9rem; color: #666;">Total Feed</div>
+                            </div>
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #333;">${avgFeedPerBird.toFixed(2)} kg</div>
+                                <div style="font-size: 0.9rem; color: #666;">Avg per Bird</div>
+                            </div>
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #333;">${feedRecords.length}</div>
+                                <div style="font-size: 0.9rem; color: #666;">Feed Records</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="records-list">
+                        ${feedRecords.slice(0, 10).map(record => `
+                            <div class="record-item" style="padding: 1rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <h5 style="margin: 0 0 0.5rem 0; color: #333;">${record.feedType || 'Feed'}</h5>
+                                        <p style="margin: 0 0 0.5rem 0;"><strong>${record.quantity} kg</strong> - ₹${record.cost || 0}/kg</p>
+                                        <small style="color: #666;">${new Date(record.date).toLocaleDateString('en-IN')}</small>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 1.1rem; font-weight: 600; color: #333;">₹${((record.cost || 0) * record.quantity).toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        
+                        ${feedRecords.length > 10 ? `
+                            <div style="text-align: center; margin-top: 1rem;">
+                                <button class="btn btn-outline" onclick="window.location.href='feed.html?flock=${flock.id}'">
+                                    View All ${feedRecords.length} Records
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            renderMortalityRecords(flock) {
+                const mortalityRecords = flock.mortalityRecords || [];
+                const container = document.getElementById('mortalityRecords');
+
+                if (mortalityRecords.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <i class="fas fa-skull-crossbones" style="font-size: 2rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <p>No mortality records</p>
+                            <small style="color: #666;">This is a good sign! Your flock is healthy.</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const totalMortality = mortalityRecords.reduce((sum, record) => sum + record.count, 0);
+                const mortalityRate = (totalMortality / flock.initialCount) * 100;
+
+                container.innerHTML = `
+                    <div class="mortality-summary" style="background: #ffebee; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f44336;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #d32f2f;">${totalMortality}</div>
+                                <div style="font-size: 0.9rem; color: #666;">Total Deaths</div>
+                            </div>
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #d32f2f;">${mortalityRate.toFixed(1)}%</div>
+                                <div style="font-size: 0.9rem; color: #666;">Mortality Rate</div>
+                            </div>
+                            <div class="summary-item">
+                                <div style="font-size: 1.2rem; font-weight: 600; color: #4caf50;">${flock.currentCount}</div>
+                                <div style="font-size: 0.9rem; color: #666;">Surviving</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="records-list">
+                        ${mortalityRecords
+                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                            .map(record => `
+                                <div class="record-item" style="padding: 1rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                        <div>
+                                            <h5 style="margin: 0 0 0.5rem 0; color: #d32f2f;">${record.count} birds died</h5>
+                                            <p style="margin: 0 0 0.5rem 0;"><strong>Cause:</strong> ${record.cause || 'Not specified'}</p>
+                                            <small style="color: #666;">${new Date(record.date).toLocaleDateString('en-IN')}</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger" onclick="flockManager.deleteMortalityRecord(${flock.id}, ${record.id})" title="Delete Record">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                    </div>
+                `;
+            }
+
+            renderFinanceData(flock) {
+                const feedRecords = JSON.parse(localStorage.getItem('feedRecords') || '[]')
+                    .filter(record => record.flockId === flock.id);
+                const sales = JSON.parse(localStorage.getItem('sales') || '[]')
+                    .filter(sale => sale.flockId === flock.id);
+                
+                const totalFeedCost = feedRecords.reduce((sum, record) => sum + (record.cost * record.quantity), 0);
+                const initialCost = flock.initialCount * flock.purchasePrice;
+                const totalRevenue = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+                const totalCost = initialCost + totalFeedCost;
+                const profit = totalRevenue - totalCost;
+
+                document.getElementById('financeData').innerHTML = `
+                    <div class="finance-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="finance-card" style="padding: 1rem; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #1976d2;">Initial Investment</h4>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: #1976d2;">₹${initialCost.toLocaleString()}</div>
+                            <small style="color: #666;">₹${flock.purchasePrice.toFixed(2)} × ${flock.initialCount} birds</small>
+                        </div>
+                        
+                        <div class="finance-card" style="padding: 1rem; background: #fff3e0; border-radius: 8px; border-left: 4px solid #ff9800;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #f57c00;">Feed Cost</h4>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: #f57c00;">₹${totalFeedCost.toLocaleString()}</div>
+                            <small style="color: #666;">${feedRecords.length} feed records</small>
+                        </div>
+                        
+                        <div class="finance-card" style="padding: 1rem; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #4caf50;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: #388e3c;">Revenue</h4>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: #388e3c;">₹${totalRevenue.toLocaleString()}</div>
+                            <small style="color: #666;">${sales.length} sales</small>
+                        </div>
+                        
+                        <div class="finance-card" style="padding: 1rem; background: ${profit >= 0 ? '#e8f5e8' : '#ffebee'}; border-radius: 8px; border-left: 4px solid ${profit >= 0 ? '#4caf50' : '#f44336'};">
+                            <h4 style="margin: 0 0 0.5rem 0; color: ${profit >= 0 ? '#388e3c' : '#d32f2f'};">${profit >= 0 ? 'Profit' : 'Loss'}</h4>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: ${profit >= 0 ? '#388e3c' : '#d32f2f'};">₹${Math.abs(profit).toLocaleString()}</div>
+                            <small style="color: #666;">Total cost: ₹${totalCost.toLocaleString()}</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin: 0 0 1rem 0; color: #333;">Cost Breakdown</h4>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <span>Initial Investment:</span>
+                                <span style="float: right; font-weight: 600;">₹${initialCost.toLocaleString()} (${((initialCost/totalCost)*100).toFixed(1)}%)</span>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <span>Feed Cost:</span>
+                                <span style="float: right; font-weight: 600;">₹${totalFeedCost.toLocaleString()} (${((totalFeedCost/totalCost)*100).toFixed(1)}%)</span>
+                            </div>
+                            <hr style="margin: 0.5rem 0;">
+                            <div>
+                                <span><strong>Total Cost:</strong></span>
+                                <span style="float: right; font-weight: 600;">₹${totalCost.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${flock.status === 'active' ? `
+                        <div style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-radius: 8px;">
+                            <h5 style="margin: 0 0 0.5rem 0; color: #1976d2;"><i class="fas fa-info-circle"></i> Financial Projections</h5>
+                            <p style="margin: 0; color: #666;">
+                                Current cost per bird: ₹${(totalCost/flock.currentCount).toFixed(2)} |
+                                Break-even selling price: ₹${((totalCost * 1.1)/flock.currentCount).toFixed(2)} per bird
+                            </p>
+                        </div>
+                    ` : ''}
+                `;
+            }
+
+            // Event Handlers
+            handleFormSubmit(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const flockData = Object.fromEntries(formData.entries());
+
+                if (this.isEditing && this.currentFlockId) {
+                    this.updateFlock(this.currentFlockId, flockData);
+                } else {
+                    this.addFlock(flockData);
+                }
+
+                this.closeModal('flockModal');
+                this.filterFlocks();
+            }
+
+            handleUpdateCountSubmit(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const updateData = Object.fromEntries(formData.entries());
+
+                if (this.updateFlockCount(this.currentFlockId, updateData)) {
+                    this.closeModal('updateCountModal');
+                    this.filterFlocks();
+                    
+                    // Refresh details modal if open
+                    const detailsModal = document.getElementById('flockDetailsModal');
+                    if (detailsModal.style.display === 'block') {
+                        this.viewFlockDetails(this.currentFlockId);
+                    }
+                }
+            }
+
+            // Health Records Management
+            addHealthRecord(flockId) {
+                const description = prompt('Enter health record description:');
+                if (!description) return;
+
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock) return;
+
+                if (!flock.healthRecords) flock.healthRecords = [];
+
+                const healthRecord = {
+                    id: Date.now(),
+                    type: 'Health Check',
+                    description: description,
+                    date: new Date().toISOString().split('T')[0],
+                    timestamp: new Date().toISOString()
+                };
+
+                flock.healthRecords.push(healthRecord);
+                flock.updatedAt = new Date().toISOString();
+                this.saveFlocks();
+
+                this.addActivity('health', `Health record added for Flock ${flock.batchNumber}: ${description}`);
+                this.showAlert('Health record added successfully!', 'success');
+
+                // Refresh details modal if open
+                const detailsModal = document.getElementById('flockDetailsModal');
+                if (detailsModal.style.display === 'block') {
+                    this.renderHealthRecords(flock);
+                }
+            }
+
+            deleteHealthRecord(flockId, recordId) {
+                if (!confirm('Are you sure you want to delete this health record?')) return;
+
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock || !flock.healthRecords) return;
+
+                flock.healthRecords = flock.healthRecords.filter(record => record.id !== recordId);
+                flock.updatedAt = new Date().toISOString();
+                this.saveFlocks();
+
+                this.showAlert('Health record deleted successfully!', 'success');
+                this.renderHealthRecords(flock);
+            }
+
+            deleteMortalityRecord(flockId, recordId) {
+                if (!confirm('Are you sure you want to delete this mortality record?')) return;
+
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock || !flock.mortalityRecords) return;
+
+                const record = flock.mortalityRecords.find(r => r.id === recordId);
+                if (!record) return;
+
+                // Restore the count
+                flock.currentCount += record.count;
+                
+                // Remove the record
+                flock.mortalityRecords = flock.mortalityRecords.filter(r => r.id !== recordId);
+                flock.updatedAt = new Date().toISOString();
+                this.saveFlocks();
+
+                this.showAlert('Mortality record deleted and count restored!', 'success');
+                this.renderMortalityRecords(flock);
+                this.renderFlockOverview(flock);
+            }
+
+            confirmDelete(flockId) {
+                const flock = this.flocks.find(f => f.id === flockId);
+                if (!flock) return;
+
+                const message = `Are you sure you want to delete Flock ${flock.batchNumber}?\n\nThis action cannot be undone and will remove all associated records.`;
+                
+                if (confirm(message)) {
+                    this.deleteFlock(flockId);
+                    this.closeModal('flockDetailsModal');
+                    this.filterFlocks();
+                }
+            }
+
+            // Alert System
+            generateFlockAlerts(flock) {
+                const age = this.calculateAge(flock.purchaseDate);
+                
+                // Vaccination alerts for broilers
+                if (flock.breed === 'broiler') {
+                    if (age >= 6 && age <= 8) {
+                        this.addAlert('info', `Vaccination reminder: Flock ${flock.batchNumber} - Newcastle Disease due (Day 7)`);
+                    }
+                    if (age >= 13 && age <= 15) {
+                        this.addAlert('info', `Vaccination reminder: Flock ${flock.batchNumber} - Gumboro due (Day 14)`);
+                    }
+                    if (age >= 40) {
+                        this.addAlert('success', `Market ready: Flock ${flock.batchNumber} has reached market age (${age} days)`);
+                    }
+                }
+
+                // Point of lay alert for layers
+                if (flock.breed === 'layer' && age >= 140) {
+                    this.addAlert('success', `Point of lay: Flock ${flock.batchNumber} has reached laying age`);
+                }
+            }
+
+            addAlert(type, message) {
+                const alerts = JSON.parse(localStorage.getItem('alerts') || '[]');
+                alerts.unshift({
+                    id: Date.now(),
+                    type: type,
+                    message: message,
+                    timestamp: new Date().toISOString(),
+                    read: false
+                });
+                localStorage.setItem('alerts', JSON.stringify(alerts));
+            }
+
+            addActivity(type, message) {
+                const activities = JSON.parse(localStorage.getItem('activities') || '[]');
+                activities.unshift({
+                    id: Date.now(),
+                    type: type,
+                    message: message,
+                    timestamp: new Date().toISOString()
+                });
+                // Keep only last 100 activities
+                if (activities.length > 100) {
+                    activities.splice(100);
+                }
+                localStorage.setItem('activities', JSON.stringify(activities));
+            }
+
+            // Modal Management
+            showModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Tab Management
+            switchTab(tabName) {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Remove active class from all tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Show selected tab content
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+
+                // Add active class to clicked tab button
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            }
+
+            // Real-time Updates
+            setupRealTimeUpdates() {
+                // Auto-save form data
+                const formInputs = document.querySelectorAll('#flockForm input, #flockForm select, #flockForm textarea');
+                formInputs.forEach(input => {
+                    input.addEventListener('input', this.debounce(() => {
+                        const formData = new FormData(document.getElementById('flockForm'));
+                        localStorage.setItem('flockFormDraft', JSON.stringify(Object.fromEntries(formData.entries())));
+                    }, 1000));
+                });
+
+                // Load form draft on page load
+                const draft = localStorage.getItem('flockFormDraft');
+                if (draft && !this.isEditing) {
+                    try {
+                        const draftData = JSON.parse(draft);
+                        Object.entries(draftData).forEach(([key, value]) => {
+                            const input = document.querySelector(`#flockForm [name="${key}"]`);
+                            if (input && value) {
+                                input.value = value;
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error loading form draft:', e);
+                    }
+                }
+
+                // Auto-refresh data every 2 minutes
+                setInterval(() => {
+                    this.checkForAlerts();
+                }, 2 * 60 * 1000);
+
+                // Listen for data updates from other tabs
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'flocks') {
+                        this.flocks = this.loadFlocks();
+                        this.filterFlocks();
+                    }
+                });
+            }
+
+            checkForAlerts() {
+                this.flocks.forEach(flock => {
+                    if (flock.status === 'active') {
+                        this.generateFlockAlerts(flock);
+                    }
+                });
+            }
+
+            // Utility Functions
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            showAlert(message, type = 'info') {
+                const alertContainer = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert-toast ${type}`;
+                
+                const icon = {
+                    success: '<i class="fas fa-check-circle"></i>',
+                    error: '<i class="fas fa-exclamation-circle"></i>',
+                    warning: '<i class="fas fa-exclamation-triangle"></i>',
+                    info: '<i class="fas fa-info-circle"></i>'
+                }[type] || '<i class="fas fa-info-circle"></i>';
+                
+                alert.innerHTML = `${icon} <span style="margin-left: 0.5rem;">${message}</span>`;
+                
+                alertContainer.appendChild(alert);
+                
+                // Animate in
+                setTimeout(() => alert.classList.add('show'), 100);
+                
+                // Remove after 4 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 300);
+                }, 4000);
+            }
+
+            // Event Listeners Setup
+            initializeEventListeners() {
+                // Form submissions
+                document.getElementById('flockForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
+                document.getElementById('updateCountForm').addEventListener('submit', (e) => this.handleUpdateCountSubmit(e));
+
+                // Modal controls
+                document.getElementById('addFlockBtn').addEventListener('click', () => this.openAddModal());
+                document.getElementById('closeModal').addEventListener('click', () => this.closeModal('flockModal'));
+                document.getElementById('cancelBtn').addEventListener('click', () => this.closeModal('flockModal'));
+                document.getElementById('closeDetailsModal').addEventListener('click', () => this.closeModal('flockDetailsModal'));
+                document.getElementById('closeUpdateModal').addEventListener('click', () => this.closeModal('updateCountModal'));
+
+                // Search and filters
+                document.getElementById('flockSearch').addEventListener('input', () => this.filterFlocks());
+                document.getElementById('statusFilter').addEventListener('change', () => this.filterFlocks());
+                document.getElementById('breedFilter').addEventListener('change', () => this.filterFlocks());
+                document.getElementById('sortBy').addEventListener('change', () => this.filterFlocks());
+
+                // Load more button
+                document.getElementById('loadMoreBtn').addEventListener('click', () => {
+                    this.currentPage++;
+                    this.renderFlocks();
+                });
+
+                // Tab switching
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tabName = btn.getAttribute('data-tab');
+                        this.switchTab(tabName);
+                    });
+                });
+
+                // Modal click outside to close
+                window.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal')) {
+                        this.closeModal(e.target.id);
+                    }
+                });
+
+                // Clear form draft when form is submitted successfully
+                document.getElementById('flockForm').addEventListener('submit', () => {
+                    localStorage.removeItem('flockFormDraft');
+                });
+
+                // Auto-calculate expected maturity date
+                document.getElementById('flockBreed').addEventListener('change', (e) => {
+                    const purchaseDate = document.getElementById('purchaseDate').value;
+                    if (!purchaseDate) return;
+
+                    const purchase = new Date(purchaseDate);
+                    let daysToAdd = 45; // default for broiler
+
+                    if (e.target.value === 'layer') {
+                        daysToAdd = 140;
+                    } else if (e.target.value === 'country') {
+                        daysToAdd = 120;
+                    }
+
+                    const maturityDate = new Date(purchase);
+                    maturityDate.setDate(maturityDate.getDate() + daysToAdd);
+                    
+                    document.getElementById('expectedMaturityDate').value = maturityDate.toISOString().split('T')[0];
+                });
+
+                // Auto-generate batch number
+                document.getElementById('flockBreed').addEventListener('change', (e) => {
+                    if (document.getElementById('flockBatch').value) return; // Don't overwrite existing value
+
+                    const breed = e.target.value;
+                    if (!breed) return;
+
+                    const prefix = breed === 'broiler' ? 'B' : breed === 'layer' ? 'L' : 'C';
+                    const existingBatches = this.flocks
+                        .filter(f => f.breed === breed)
+                        .map(f => f.batchNumber)
+                        .filter(batch => batch.startsWith(prefix))
+                        .map(batch => parseInt(batch.substring(1)) || 0)
+                        .sort((a, b) => b - a);
+
+                    const nextNumber = existingBatches.length > 0 ? existingBatches[0] + 1 : 1;
+                    document.getElementById('flockBatch').value = `${prefix}${nextNumber.toString().padStart(3, '0')}`;
+                });
+
+                // Logout functionality
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    if (confirm('Are you sure you want to logout?')) {
+                        // Clear any sensitive data
+                        localStorage.removeItem('flockFormDraft');
+                        this.showAlert('Logged out successfully', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+
+        // Initialize the application
+        let flockManager;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            flockManager = new FlockManager();
+            flockManager.filterFlocks();
+            
+            // Show welcome message for new users
+            if (flockManager.flocks.length === 0) {
+                setTimeout(() => {
+                    flockManager.showAlert('Welcome to Flock Management! Add your first flock to get started.', 'info');
+                }, 2000);
+            }
+        });
+
+        // Make functions globally available for onclick handlers
+        window.flockManager = null;
+        window.addEventListener('load', () => {
+            window.flockManager = flockManager;
+        });
+
+        // Export for debugging
+        window.FlockDebug = {
+            get manager() { return flockManager; },
+            resetData() {
+                if (confirm('This will delete all flock data. Are you sure?')) {
+                    localStorage.removeItem('flocks');
+                    localStorage.removeItem('activities');
+                    localStorage.removeItem('alerts');
+                    location.reload();
+                }
+            },
+            addSampleData() {
+                const sampleFlocks = [
+                    {
+                        batchNumber: 'B001',
+                        breed: 'broiler',
+                        initialCount: 1000,
+                        purchaseDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        purchasePrice: 45,
+                        supplier: 'Sample Hatchery',
+                        houseNumber: 'House 1'
+                    },
+                    {
+                        batchNumber: 'L001',
+                        breed: 'layer',
+                        initialCount: 500,
+                        purchaseDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        purchasePrice: 85,
+                        supplier: 'Layer Farm',
+                        houseNumber: 'House 2'
+                    }
+                ];
+                
+                sampleFlocks.forEach(flockData => {
+                    flockManager.addFlock(flockData);
+                });
+                
+                flockManager.filterFlocks();
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1251 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Poultry Farm Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Feed Management</h1>
+            <div class="header-actions">
+                <button id="addFeedStockBtn" class="btn btn-secondary">+ Add Feed Stock</button>
+                <button id="recordFeedingBtn" class="btn btn-primary">📝 Record Feeding</button>
+            </div>
+        </div>
+
+        <!-- Feed Stock Overview -->
+        <div class="feed-overview">
+            <div class="overview-card">
+                <h3>Feed Stock Summary</h3>
+                <div id="feedStockCards" class="stock-cards">
+                    <!-- Stock cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed Tabs -->
+        <div class="feed-tabs">
+            <button class="tab-btn active" data-tab="inventory">Feed Inventory</button>
+            <button class="tab-btn" data-tab="consumption">Feed Consumption</button>
+            <button class="tab-btn" data-tab="history">Purchase History</button>
+            <button class="tab-btn" data-tab="analysis">Feed Analysis</button>
+        </div>
+
+        <!-- Feed Inventory Tab -->
+        <div id="inventory-tab" class="tab-content active">
+            <div class="section-header">
+                <h3>Current Feed Inventory</h3>
+                <div class="filter-controls">
+                    <select id="feedTypeFilter" class="form-select">
+                        <option value="">All Feed Types</option>
+                        <option value="starter">Starter Feed</option>
+                        <option value="grower">Grower Feed</option>
+                        <option value="finisher">Finisher Feed</option>
+                        <option value="layer">Layer Feed</option>
+                    </select>
+                    <select id="stockStatusFilter" class="form-select">
+                        <option value="">All Stock Status</option>
+                        <option value="in-stock">In Stock</option>
+                        <option value="low-stock">Low Stock</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="inventoryTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Feed Type</th>
+                            <th>Brand</th>
+                            <th>Current Stock (kg)</th>
+                            <th>Min. Required (kg)</th>
+                            <th>Price per kg (₹)</th>
+                            <th>Total Value (₹)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Inventory data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feed Consumption Tab -->
+        <div id="consumption-tab" class="tab-content">
+            <div class="section-header">
+                <h3>Feed Consumption Records</h3>
+                <div class="filter-controls">
+                    <input type="date" id="consumptionFromDate" class="form-input">
+                    <input type="date" id="consumptionToDate" class="form-input">
+                    <select id="flockFilter" class="form-select">
+                        <option value="">All Flocks</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                    <button id="filterConsumptionBtn" class="btn btn-secondary">Filter</button>
+                    <button id="exportConsumptionBtn" class="btn btn-success">Export CSV</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="consumptionTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Flock</th>
+                            <th>Feed Type</th>
+                            <th>Quantity (kg)</th>
+                            <th>Cost (₹)</th>
+                            <th>Fed By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Consumption data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Purchase History Tab -->
+        <div id="history-tab" class="tab-content">
+            <div class="section-header">
+                <h3>Feed Purchase History</h3>
+                <div class="filter-controls">
+                    <input type="date" id="purchaseFromDate" class="form-input">
+                    <input type="date" id="purchaseToDate" class="form-input">
+                    <select id="supplierFilter" class="form-select">
+                        <option value="">All Suppliers</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                    <button id="filterPurchaseBtn" class="btn btn-secondary">Filter</button>
+                    <button id="exportPurchaseBtn" class="btn btn-success">Export CSV</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="historyTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Feed Type</th>
+                            <th>Brand</th>
+                            <th>Quantity (kg)</th>
+                            <th>Price per kg (₹)</th>
+                            <th>Total Cost (₹)</th>
+                            <th>Supplier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Purchase history will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feed Analysis Tab -->
+        <div id="analysis-tab" class="tab-content">
+            <div class="section-header">
+                <h3>Feed Cost Analysis</h3>
+                <div class="filter-controls">
+                    <select id="analysisPeriod" class="form-select">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="365">Last Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="overview-card">
+                <h4>Feed Consumption & Cost Overview</h4>
+                <div id="analysisCharts" style="height: 300px; margin: 20px 0;">
+                    <canvas id="feedAnalysisChart"></canvas>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="analysisTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Feed Type</th>
+                            <th>Total Consumed (kg)</th>
+                            <th>Total Cost (₹)</th>
+                            <th>Avg. Daily Consumption (kg)</th>
+                            <th>Cost per kg (₹)</th>
+                            <th>Cost Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Analysis data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Feed Stock Modal -->
+    <div id="feedStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="stockModalTitle">Add Feed Stock</h2>
+                <span class="close" id="closeFeedStockModal">&times;</span>
+            </div>
+            <form id="feedStockForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="feedType">Feed Type *</label>
+                        <select id="feedType" name="feedType" required>
+                            <option value="">Select Feed Type</option>
+                            <option value="starter">Starter Feed</option>
+                            <option value="grower">Grower Feed</option>
+                            <option value="finisher">Finisher Feed</option>
+                            <option value="layer">Layer Feed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="brandName">Brand Name *</label>
+                        <input type="text" id="brandName" name="brandName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">Quantity (kg) *</label>
+                        <input type="number" id="quantity" name="quantity" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="pricePerKg">Price per kg (₹) *</label>
+                        <input type="number" id="pricePerKg" name="pricePerKg" required min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchaseDate">Purchase Date *</label>
+                        <input type="date" id="purchaseDate" name="purchaseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier">Supplier *</label>
+                        <input type="text" id="supplier" name="supplier" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" id="expiryDate" name="expiryDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="minStock">Minimum Stock Level (kg)</label>
+                        <input type="number" id="minStock" name="minStock" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockNotes">Notes</label>
+                    <textarea id="stockNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('feedStockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Record Feeding Modal -->
+    <div id="feedingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Record Feeding</h2>
+                <span class="close" id="closeFeedingModal">&times;</span>
+            </div>
+            <form id="feedingForm" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="feedingDate">Feeding Date *</label>
+                        <input type="date" id="feedingDate" name="feedingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedingFlock">Flock *</label>
+                        <select id="feedingFlock" name="flockId" required>
+                            <option value="">Select Flock</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="feedingType">Feed Type *</label>
+                        <select id="feedingType" name="feedType" required>
+                            <option value="">Select Feed Type</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedingQuantity">Quantity (kg) *</label>
+                        <input type="number" id="feedingQuantity" name="quantity" required min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="feedingTime">Feeding Time</label>
+                        <select id="feedingTime" name="feedingTime">
+                            <option value="">Select Time</option>
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                            <option value="evening">Evening</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fedBy">Fed By</label>
+                        <input type="text" id="fedBy" name="fedBy">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedingNotes">Notes</label>
+                    <textarea id="feedingNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('feedingModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Record Feeding</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Feed Stock Modal -->
+    <div id="editFeedStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Feed Stock</h2>
+                <span class="close" onclick="closeModal('editFeedStockModal')">&times;</span>
+            </div>
+            <form id="editFeedStockForm" class="modal-body">
+                <input type="hidden" id="editStockId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFeedType">Feed Type</label>
+                        <input type="text" id="editFeedType" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBrandName">Brand Name</label>
+                        <input type="text" id="editBrandName" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCurrentStock">Current Stock (kg)</label>
+                        <input type="number" id="editCurrentStock" name="currentStock" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMinStock">Minimum Stock Level (kg)</label>
+                        <input type="number" id="editMinStock" name="minStock" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editPricePerKg">Price per kg (₹)</label>
+                        <input type="number" id="editPricePerKg" name="pricePerKg" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editFeedStockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data storage and management
+        let feedData = {
+            inventory: [],
+            consumption: [],
+            purchases: [],
+            flocks: []
+        };
+
+        // Initialize the application
+        function initializeFeedManagement() {
+            // Load data from localStorage or initialize with sample data
+            loadDataFromStorage();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Set default dates in filters to current month
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('consumptionFromDate').valueAsDate = firstDayOfMonth;
+            document.getElementById('consumptionToDate').valueAsDate = today;
+            document.getElementById('purchaseFromDate').valueAsDate = firstDayOfMonth;
+            document.getElementById('purchaseToDate').valueAsDate = today;
+            
+            // Populate flock dropdowns
+            populateFlockDropdowns();
+            
+            // Populate feed type dropdowns
+            populateFeedTypeDropdowns();
+            
+            // Load initial data displays
+            loadFeedStockCards();
+            loadInventoryTable();
+            loadConsumptionTable();
+            loadPurchaseHistoryTable();
+            loadAnalysisData();
+        }
+
+        // Load data from localStorage
+        function loadDataFromStorage() {
+            const savedData = localStorage.getItem('poultryFeedData');
+            
+            if (savedData) {
+                feedData = JSON.parse(savedData);
+            } else {
+                // Initialize with sample data if no saved data exists
+                initializeSampleData();
+            }
+        }
+
+        // Initialize with sample data
+        function initializeSampleData() {
+            const currentDate = new Date();
+            
+            // Sample flocks
+            feedData.flocks = [
+                { id: 1, name: "Broiler Batch #1", type: "Broiler", age: 28, quantity: 500 },
+                { id: 2, name: "Layer Batch #1", type: "Layer", age: 120, quantity: 300 },
+                { id: 3, name: "Broiler Batch #2", type: "Broiler", age: 14, quantity: 400 }
+            ];
+            
+            // Sample inventory
+            feedData.inventory = [
+                { id: 1, feedType: "starter", brand: "Premier Poultry", currentStock: 250, minStock: 100, pricePerKg: 45, totalValue: 11250 },
+                { id: 2, feedType: "grower", brand: "Farmers Choice", currentStock: 480, minStock: 200, pricePerKg: 42, totalValue: 20160 },
+                { id: 3, feedType: "finisher", brand: "Growth Plus", currentStock: 320, minStock: 150, pricePerKg: 40, totalValue: 12800 },
+                { id: 4, feedType: "layer", brand: "Eggcellent", currentStock: 180, minStock: 100, pricePerKg: 38, totalValue: 6840 }
+            ];
+            
+            // Sample consumption records
+            feedData.consumption = [];
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                
+                const flock = feedData.flocks[Math.floor(Math.random() * feedData.flocks.length)];
+                const feedType = ["starter", "grower", "finisher", "layer"][Math.floor(Math.random() * 4)];
+                const quantity = Math.floor(Math.random() * 50) + 20;
+                const pricePerKg = [45, 42, 40, 38][["starter", "grower", "finisher", "layer"].indexOf(feedType)];
+                
+                feedData.consumption.push({
+                    id: i + 1,
+                    date: date.toISOString().split('T')[0],
+                    flockId: flock.id,
+                    flockName: flock.name,
+                    feedType: feedType,
+                    quantity: quantity,
+                    cost: quantity * pricePerKg,
+                    fedBy: ["Rajesh", "Priya", "Anil", "Sunita"][Math.floor(Math.random() * 4)],
+                    feedingTime: ["morning", "afternoon", "evening"][Math.floor(Math.random() * 3)]
+                });
+            }
+            
+            // Sample purchase history
+            feedData.purchases = [];
+            for (let i = 0; i < 15; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - Math.floor(Math.random() * 90));
+                
+                const feedType = ["starter", "grower", "finisher", "layer"][Math.floor(Math.random() * 4)];
+                const brands = {
+                    "starter": ["Premier Poultry", "Chick Start", "Early Growth"],
+                    "grower": ["Farmers Choice", "Grow Fast", "Healthy Birds"],
+                    "finisher": ["Growth Plus", "Final Touch", "Weight Gain"],
+                    "layer": ["Eggcellent", "Layer Max", "Hen Health"]
+                };
+                
+                const brand = brands[feedType][Math.floor(Math.random() * brands[feedType].length)];
+                const quantity = Math.floor(Math.random() * 500) + 100;
+                const pricePerKg = [45, 42, 40, 38][["starter", "grower", "finisher", "layer"].indexOf(feedType)] * (0.9 + Math.random() * 0.2);
+                
+                feedData.purchases.push({
+                    id: i + 1,
+                    date: date.toISOString().split('T')[0],
+                    feedType: feedType,
+                    brand: brand,
+                    quantity: quantity,
+                    pricePerKg: pricePerKg.toFixed(2),
+                    totalCost: (quantity * pricePerKg).toFixed(2),
+                    supplier: ["Agro Supplies", "Poultry Feed Co.", "Farm Products Ltd.", "Animal Nutrition Inc."][Math.floor(Math.random() * 4)]
+                });
+            }
+            
+            // Save the sample data to localStorage
+            saveDataToStorage();
+        }
+
+        // Save data to localStorage
+        function saveDataToStorage() {
+            localStorage.setItem('poultryFeedData', JSON.stringify(feedData));
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.getAttribute('data-tab');
+                    switchTab(tab);
+                });
+            });
+            
+            // Modal triggers
+            document.getElementById('addFeedStockBtn').addEventListener('click', () => openModal('feedStockModal'));
+            document.getElementById('recordFeedingBtn').addEventListener('click', () => openModal('feedingModal'));
+            
+            // Modal close buttons
+            document.getElementById('closeFeedStockModal').addEventListener('click', () => closeModal('feedStockModal'));
+            document.getElementById('closeFeedingModal').addEventListener('click', () => closeModal('feedingModal'));
+            
+            // Form submissions
+            document.getElementById('feedStockForm').addEventListener('submit', handleFeedStockSubmit);
+            document.getElementById('feedingForm').addEventListener('submit', handleFeedingSubmit);
+            document.getElementById('editFeedStockForm').addEventListener('submit', handleEditFeedStockSubmit);
+            
+            // Filter buttons
+            document.getElementById('filterConsumptionBtn').addEventListener('click', loadConsumptionTable);
+            document.getElementById('filterPurchaseBtn').addEventListener('click', loadPurchaseHistoryTable);
+            
+            // Export buttons
+            document.getElementById('exportConsumptionBtn').addEventListener('click', exportConsumptionData);
+            document.getElementById('exportPurchaseBtn').addEventListener('click', exportPurchaseData);
+            
+            // Analysis period change
+            document.getElementById('analysisPeriod').addEventListener('change', loadAnalysisData);
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Load data for the selected tab if needed
+            if (tabName === 'analysis') {
+                loadAnalysisData();
+            }
+        }
+
+        // Open modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            
+            // Set current date as default for date fields
+            if (modalId === 'feedStockModal') {
+                document.getElementById('purchaseDate').valueAsDate = new Date();
+            } else if (modalId === 'feedingModal') {
+                document.getElementById('feedingDate').valueAsDate = new Date();
+            }
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Populate flock dropdowns
+        function populateFlockDropdowns() {
+            const flockSelect = document.getElementById('flockFilter');
+            const feedingFlockSelect = document.getElementById('feedingFlock');
+            
+            // Clear existing options except the first one
+            while (flockSelect.options.length > 1) flockSelect.remove(1);
+            while (feedingFlockSelect.options.length > 1) feedingFlockSelect.remove(1);
+            
+            // Add flock options
+            feedData.flocks.forEach(flock => {
+                const option = document.createElement('option');
+                option.value = flock.id;
+                option.textContent = flock.name;
+                flockSelect.appendChild(option.cloneNode(true));
+                feedingFlockSelect.appendChild(option);
+            });
+        }
+
+        // Populate feed type dropdowns
+        function populateFeedTypeDropdowns() {
+            const feedingTypeSelect = document.getElementById('feedingType');
+            
+            // Clear existing options except the first one
+            while (feedingTypeSelect.options.length > 1) feedingTypeSelect.remove(1);
+            
+            // Get unique feed types from inventory
+            const feedTypes = [...new Set(feedData.inventory.map(item => item.feedType))];
+            
+            // Add feed type options
+            feedTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type.charAt(0).toUpperCase() + type.slice(1) + " Feed";
+                feedingTypeSelect.appendChild(option);
+            });
+        }
+
+        // Handle feed stock form submission
+        function handleFeedStockSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const feedType = formData.get('feedType');
+            const brandName = formData.get('brandName');
+            const quantity = parseFloat(formData.get('quantity'));
+            const pricePerKg = parseFloat(formData.get('pricePerKg'));
+            
+            // Check if this feed type and brand already exists in inventory
+            const existingIndex = feedData.inventory.findIndex(
+                item => item.feedType === feedType && item.brand === brandName
+            );
+            
+            if (existingIndex !== -1) {
+                // Update existing inventory
+                feedData.inventory[existingIndex].currentStock += quantity;
+                feedData.inventory[existingIndex].pricePerKg = pricePerKg;
+                feedData.inventory[existingIndex].totalValue = feedData.inventory[existingIndex].currentStock * pricePerKg;
+                
+                if (formData.get('minStock')) {
+                    feedData.inventory[existingIndex].minStock = parseFloat(formData.get('minStock'));
+                }
+            } else {
+                // Add new inventory item
+                const newItem = {
+                    id: feedData.inventory.length > 0 ? Math.max(...feedData.inventory.map(item => item.id)) + 1 : 1,
+                    feedType: feedType,
+                    brand: brandName,
+                    currentStock: quantity,
+                    minStock: formData.get('minStock') ? parseFloat(formData.get('minStock')) : 100,
+                    pricePerKg: pricePerKg,
+                    totalValue: quantity * pricePerKg
+                };
+                
+                feedData.inventory.push(newItem);
+            }
+            
+            // Add to purchase history
+            const newPurchase = {
+                id: feedData.purchases.length > 0 ? Math.max(...feedData.purchases.map(item => item.id)) + 1 : 1,
+                date: formData.get('purchaseDate'),
+                feedType: feedType,
+                brand: brandName,
+                quantity: quantity,
+                pricePerKg: pricePerKg.toFixed(2),
+                totalCost: (quantity * pricePerKg).toFixed(2),
+                supplier: formData.get('supplier')
+            };
+            
+            feedData.purchases.push(newPurchase);
+            
+            // Save data and update UI
+            saveDataToStorage();
+            loadFeedStockCards();
+            loadInventoryTable();
+            loadPurchaseHistoryTable();
+            
+            // Close modal and show success message
+            closeModal('feedStockModal');
+            e.target.reset();
+            showAlert('Feed stock added successfully!', 'success');
+        }
+
+        // Handle feeding form submission
+        function handleFeedingSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const flockId = parseInt(formData.get('flockId'));
+            const feedType = formData.get('feedType');
+            const quantity = parseFloat(formData.get('quantity'));
+            const date = formData.get('feedingDate');
+            
+            // Find the selected flock
+            const flock = feedData.flocks.find(f => f.id === flockId);
+            if (!flock) {
+                showAlert('Selected flock not found!', 'error');
+                return;
+            }
+            
+            // Find the feed in inventory
+            const feedIndex = feedData.inventory.findIndex(item => item.feedType === feedType);
+            if (feedIndex === -1) {
+                showAlert('Selected feed type not found in inventory!', 'error');
+                return;
+            }
+            
+            // Check if there's enough stock
+            if (feedData.inventory[feedIndex].currentStock < quantity) {
+                showAlert(`Not enough ${feedType} feed in stock! Current stock: ${feedData.inventory[feedIndex].currentStock}kg`, 'error');
+                return;
+            }
+            
+            // Reduce inventory
+            feedData.inventory[feedIndex].currentStock -= quantity;
+            feedData.inventory[feedIndex].totalValue = feedData.inventory[feedIndex].currentStock * feedData.inventory[feedIndex].pricePerKg;
+            
+            // Add consumption record
+            const newConsumption = {
+                id: feedData.consumption.length > 0 ? Math.max(...feedData.consumption.map(item => item.id)) + 1 : 1,
+                date: date,
+                flockId: flockId,
+                flockName: flock.name,
+                feedType: feedType,
+                quantity: quantity,
+                cost: quantity * feedData.inventory[feedIndex].pricePerKg,
+                fedBy: formData.get('fedBy') || 'Unknown',
+                feedingTime: formData.get('feedingTime') || ''
+            };
+            
+            feedData.consumption.push(newConsumption);
+            
+            // Save data and update UI
+            saveDataToStorage();
+            loadFeedStockCards();
+            loadInventoryTable();
+            loadConsumptionTable();
+            
+            // Close modal and show success message
+            closeModal('feedingModal');
+            e.target.reset();
+            showAlert('Feeding recorded successfully!', 'success');
+        }
+
+        // Handle edit feed stock form submission
+        function handleEditFeedStockSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const stockId = parseInt(document.getElementById('editStockId').value);
+            const currentStock = parseFloat(formData.get('currentStock'));
+            const minStock = parseFloat(formData.get('minStock'));
+            const pricePerKg = parseFloat(formData.get('pricePerKg'));
+            
+            // Find the inventory item
+            const itemIndex = feedData.inventory.findIndex(item => item.id === stockId);
+            if (itemIndex === -1) {
+                showAlert('Feed stock item not found!', 'error');
+                return;
+            }
+            
+            // Update the inventory item
+            feedData.inventory[itemIndex].currentStock = currentStock;
+            feedData.initemIndex.minStock = minStock;
+            feedData.inventory[itemIndex].pricePerKg = pricePerKg;
+            feedData.inventory[itemIndex].totalValue = currentStock * pricePerKg;
+            
+            // Save data and update UI
+            saveDataToStorage();
+            loadFeedStockCards();
+            loadInventoryTable();
+            
+            // Close modal and show success message
+            closeModal('editFeedStockModal');
+            showAlert('Feed stock updated successfully!', 'success');
+        }
+
+        // Load feed stock cards
+        function loadFeedStockCards() {
+            const container = document.getElementById('feedStockCards');
+            container.innerHTML = '';
+            
+            feedData.inventory.forEach(item => {
+                let status = 'good';
+                let statusText = 'In Stock';
+                
+                if (item.currentStock <= 0) {
+                    status = 'critical';
+                    statusText = 'Out of Stock';
+                } else if (item.currentStock < item.minStock) {
+                    status = 'low';
+                    statusText = 'Low Stock';
+                }
+                
+                const card = document.createElement('div');
+                card.className = `stock-card ${status}`;
+                card.innerHTML = `
+                    <h4>${item.feedType.charAt(0).toUpperCase() + item.feedType.slice(1)} Feed</h4>
+                    <p>${item.currentStock} kg</p>
+                    <span class="status ${statusText.toLowerCase().replace(' ', '-')}">${statusText}</span>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Load inventory table
+        function loadInventoryTable() {
+            const tableBody = document.querySelector('#inventoryTable tbody');
+            tableBody.innerHTML = '';
+            
+            const feedTypeFilter = document.getElementById('feedTypeFilter').value;
+            const statusFilter = document.getElementById('stockStatusFilter').value;
+            
+            feedData.inventory.forEach(item => {
+                // Apply filters
+                if (feedTypeFilter && item.feedType !== feedTypeFilter) return;
+                
+                let status = 'in-stock';
+                if (item.currentStock <= 0) {
+                    status = 'out-of-stock';
+                } else if (item.currentStock < item.minStock) {
+                    status = 'low-stock';
+                }
+                
+                if (statusFilter && status !== statusFilter) return;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.feedType.charAt(0).toUpperCase() + item.feedType.slice(1)}</td>
+                    <td>${item.brand}</td>
+                    <td>${item.currentStock}</td>
+                    <td>${item.minStock}</td>
+                    <td>₹${item.pricePerKg.toFixed(2)}</td>
+                    <td>₹${item.totalValue.toFixed(2)}</td>
+                    <td><span class="status ${status}">${status.replace('-', ' ')}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-primary" onclick="editFeedStock(${item.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFeedStock(${item.id})">Delete</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Load consumption table
+        function loadConsumptionTable() {
+            const tableBody = document.querySelector('#consumptionTable tbody');
+            tableBody.innerHTML = '';
+            
+            const fromDate = document.getElementById('consumptionFromDate').value;
+            const toDate = document.getElementById('consumptionToDate').value;
+            const flockFilter = document.getElementById('flockFilter').value;
+            
+            // Filter and sort consumption records (newest first)
+            const filteredConsumption = feedData.consumption
+                .filter(record => {
+                    if (fromDate && record.date < fromDate) return false;
+                    if (toDate && record.date > toDate) return false;
+                    if (flockFilter && record.flockId !== parseInt(flockFilter)) return false;
+                    return true;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            filteredConsumption.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.flockName}</td>
+                    <td>${record.feedType.charAt(0).toUpperCase() + record.feedType.slice(1)}</td>
+                    <td>${record.quantity}</td>
+                    <td>₹${record.cost.toFixed(2)}</td>
+                    <td>${record.fedBy}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-danger" onclick="deleteConsumptionRecord(${record.id})">Delete</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Load purchase history table
+        function loadPurchaseHistoryTable() {
+            const tableBody = document.querySelector('#historyTable tbody');
+            tableBody.innerHTML = '';
+            
+            const fromDate = document.getElementById('purchaseFromDate').value;
+            const toDate = document.getElementById('purchaseToDate').value;
+            const supplierFilter = document.getElementById('supplierFilter').value;
+            
+            // Filter and sort purchase records (newest first)
+            const filteredPurchases = feedData.purchases
+                .filter(record => {
+                    if (fromDate && record.date < fromDate) return false;
+                    if (toDate && record.date > toDate) return false;
+                    if (supplierFilter && record.supplier !== supplierFilter) return false;
+                    return true;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            filteredPurchases.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.feedType.charAt(0).toUpperCase() + record.feedType.slice(1)}</td>
+                    <td>${record.brand}</td>
+                    <td>${record.quantity}</td>
+                    <td>₹${parseFloat(record.pricePerKg).toFixed(2)}</td>
+                    <td>₹${parseFloat(record.totalCost).toFixed(2)}</td>
+                    <td>${record.supplier}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-danger" onclick="deletePurchaseRecord(${record.id})">Delete</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Update supplier filter options
+            updateSupplierFilter();
+        }
+
+        // Load analysis data
+        function loadAnalysisData() {
+            const period = parseInt(document.getElementById('analysisPeriod').value);
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - period);
+            
+            // Filter consumption records for the selected period
+            const filteredConsumption = feedData.consumption.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate >= startDate && recordDate <= endDate;
+            });
+            
+            // Group consumption by feed type
+            const consumptionByType = {};
+            filteredConsumption.forEach(record => {
+                if (!consumptionByType[record.feedType]) {
+                    consumptionByType[record.feedType] = {
+                        totalQuantity: 0,
+                        totalCost: 0,
+                        records: []
+                    };
+                }
+                
+                consumptionByType[record.feedType].totalQuantity += record.quantity;
+                consumptionByType[record.feedType].totalCost += record.cost;
+                consumptionByType[record.feedType].records.push(record);
+            });
+            
+            // Update analysis table
+            const tableBody = document.querySelector('#analysisTable tbody');
+            tableBody.innerHTML = '';
+            
+            Object.keys(consumptionByType).forEach(feedType => {
+                const data = consumptionByType[feedType];
+                const avgDailyConsumption = data.totalQuantity / period;
+                const costPerKg = data.totalCost / data.totalQuantity;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${feedType.charAt(0).toUpperCase() + feedType.slice(1)}</td>
+                    <td>${data.totalQuantity.toFixed(2)}</td>
+                    <td>₹${data.totalCost.toFixed(2)}</td>
+                    <td>${avgDailyConsumption.toFixed(2)}</td>
+                    <td>₹${costPerKg.toFixed(2)}</td>
+                    <td>${getTrendIcon(costPerKg, feedType)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Update chart
+            updateAnalysisChart(consumptionByType);
+        }
+
+        // Update analysis chart
+        function updateAnalysisChart(consumptionData) {
+            const ctx = document.getElementById('feedAnalysisChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.feedAnalysisChartInstance) {
+                window.feedAnalysisChartInstance.destroy();
+            }
+            
+            const feedTypes = Object.keys(consumptionData);
+            const quantities = feedTypes.map(type => consumptionData[type].totalQuantity);
+            const costs = feedTypes.map(type => consumptionData[type].totalCost);
+            
+            window.feedAnalysisChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: feedTypes.map(type => type.charAt(0).toUpperCase() + type.slice(1)),
+                    datasets: [
+                        {
+                            label: 'Quantity (kg)',
+                            data: quantities,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cost (₹)',
+                            data: costs,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Quantity (kg)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Cost (₹)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Get trend icon for analysis table
+        function getTrendIcon(currentCost, feedType) {
+            // This is a simplified implementation
+            // In a real application, you would compare with historical data
+            const randomTrend = Math.random();
+            if (randomTrend < 0.4) {
+                return '↗️ Increasing';
+            } else if (randomTrend < 0.7) {
+                return '↘️ Decreasing';
+            } else {
+                return '→ Stable';
+            }
+        }
+
+        // Update supplier filter options
+        function updateSupplierFilter() {
+            const supplierFilter = document.getElementById('supplierFilter');
+            
+            // Get unique suppliers
+            const suppliers = [...new Set(feedData.purchases.map(purchase => purchase.supplier))];
+            
+            // Clear existing options except the first one
+            while (supplierFilter.options.length > 1) supplierFilter.remove(1);
+            
+            // Add supplier options
+            suppliers.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier;
+                option.textContent = supplier;
+                supplierFilter.appendChild(option);
+            });
+        }
+
+        // Edit feed stock
+        function editFeedStock(stockId) {
+            const item = feedData.inventory.find(item => item.id === stockId);
+            if (!item) return;
+            
+            document.getElementById('editStockId').value = item.id;
+            document.getElementById('editFeedType').value = item.feedType.charAt(0).toUpperCase() + item.feedType.slice(1);
+            document.getElementById('editBrandName').value = item.brand;
+            document.getElementById('editCurrentStock').value = item.currentStock;
+            document.getElementById('editMinStock').value = item.minStock;
+            document.getElementById('editPricePerKg').value = item.pricePerKg;
+            
+            openModal('editFeedStockModal');
+        }
+
+        // Delete feed stock
+        function deleteFeedStock(stockId) {
+            if (!confirm('Are you sure you want to delete this feed stock? This action cannot be undone.')) return;
+            
+            feedData.inventory = feedData.inventory.filter(item => item.id !== stockId);
+            saveDataToStorage();
+            loadFeedStockCards();
+            loadInventoryTable();
+            showAlert('Feed stock deleted successfully!', 'success');
+        }
+
+        // Delete consumption record
+        function deleteConsumptionRecord(recordId) {
+            if (!confirm('Are you sure you want to delete this consumption record? This action cannot be undone.')) return;
+            
+            // Find the record to get the quantity and feed type
+            const record = feedData.consumption.find(r => r.id === recordId);
+            if (record) {
+                // Add the quantity back to inventory
+                const feedIndex = feedData.inventory.findIndex(item => item.feedType === record.feedType);
+                if (feedIndex !== -1) {
+                    feedData.inventory[feedIndex].currentStock += record.quantity;
+                    feedData.inventory[feedIndex].totalValue = feedData.inventory[feedIndex].currentStock * feedData.inventory[feedIndex].pricePerKg;
+                }
+            }
+            
+            feedData.consumption = feedData.consumption.filter(record => record.id !== recordId);
+            saveDataToStorage();
+            loadFeedStockCards();
+            loadInventoryTable();
+            loadConsumptionTable();
+            showAlert('Consumption record deleted successfully!', 'success');
+        }
+
+        // Delete purchase record
+        function deletePurchaseRecord(recordId) {
+            if (!confirm('Are you sure you want to delete this purchase record? This action cannot be undone.')) return;
+            
+            feedData.purchases = feedData.purchases.filter(record => record.id !== recordId);
+            saveDataToStorage();
+            loadPurchaseHistoryTable();
+            showAlert('Purchase record deleted successfully!', 'success');
+        }
+
+        // Export consumption data to CSV
+        function exportConsumptionData() {
+            const fromDate = document.getElementById('consumptionFromDate').value;
+            const toDate = document.getElementById('consumptionToDate').value;
+            const flockFilter = document.getElementById('flockFilter').value;
+            
+            // Filter consumption records
+            const filteredConsumption = feedData.consumption
+                .filter(record => {
+                    if (fromDate && record.date < fromDate) return false;
+                    if (toDate && record.date > toDate) return false;
+                    if (flockFilter && record.flockId !== parseInt(flockFilter)) return false;
+                    return true;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Create CSV content
+            let csvContent = "Date,Flock,Feed Type,Quantity (kg),Cost (₹),Fed By\n";
+            filteredConsumption.forEach(record => {
+                csvContent += `"${record.date}","${record.flockName}","${record.feedType}",${record.quantity},${record.cost},"${record.fedBy}"\n`;
+            });
+            
+            // Create download link
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `feed_consumption_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Export purchase data to CSV
+        function exportPurchaseData() {
+            const fromDate = document.getElementById('purchaseFromDate').value;
+            const toDate = document.getElementById('purchaseToDate').value;
+            const supplierFilter = document.getElementById('supplierFilter').value;
+            
+            // Filter purchase records
+            const filteredPurchases = feedData.purchases
+                .filter(record => {
+                    if (fromDate && record.date < fromDate) return false;
+                    if (toDate && record.date > toDate) return false;
+                    if (supplierFilter && record.supplier !== supplierFilter) return false;
+                    return true;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Create CSV content
+            let csvContent = "Date,Feed Type,Brand,Quantity (kg),Price per kg (₹),Total Cost (₹),Supplier\n";
+            filteredPurchases.forEach(record => {
+                csvContent += `"${record.date}","${record.feedType}","${record.brand}",${record.quantity},${record.pricePerKg},${record.totalCost},"${record.supplier}"\n`;
+            });
+            
+            // Create download link
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `feed_purchases_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${message}</span>
+                <span class="alert-close" onclick="this.parentElement.remove()">&times;</span>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 3000);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFeedManagement();
+        });
+    </script>
+</body>
+</html>

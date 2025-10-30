@@ -1,0 +1,649 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Management - Poultry Farm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+        <div class="nav-brand">
+            <h2><i class="fas fa-egg"></i> PoultryPro Manager</h2>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="flock.html" class="nav-link">Flocks</a>
+            <a href="feed.html" class="nav-link">Feed</a>
+            <a href="sales.html" class="nav-link">Sales</a>
+            <a href="expenses.html" class="nav-link">Expenses</a>
+            <a href="reports.html" class="nav-link">Reports</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Sales Management <span id="realTimeIndicator" style="font-size: 0.6em; background: var(--success); color: white; padding: 0.2em 0.5em; border-radius: 10px; margin-left: 10px;">LIVE</span></h1>
+            <button id="recordSaleBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Record New Sale</button>
+        </div>
+
+        <!-- Sales Summary Cards -->
+        <div class="sales-summary">
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="summary-info">
+                    <h3 id="todayRevenue">₹0</h3>
+                    <p>Today's Revenue</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="summary-info">
+                    <h3 id="monthlyRevenue">₹0</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-kiwi-bird"></i></div>
+                <div class="summary-info">
+                    <h3 id="birdsSoldToday">0</h3>
+                    <p>Birds Sold Today</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon"><i class="fas fa-balance-scale"></i></div>
+                <div class="summary-info">
+                    <h3 id="avgPrice">₹0</h3>
+                    <p>Avg. Price/Bird</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <input type="text" id="saleSearch" placeholder="Search by customer, invoice..." oninput="filterSales()">
+            </div>
+            <div class="filter-controls">
+                <input type="date" id="fromDate" class="form-input" onchange="filterSales()">
+                <input type="date" id="toDate" class="form-input" onchange="filterSales()">
+                <select id="customerFilter" class="form-select" onchange="filterSales()">
+                    <option value="">All Customers</option>
+                    <option value="customer1">Customer 1</option>
+                    <option value="customer2">Customer 2</option>
+                    <option value="customer3">Customer 3</option>
+                </select>
+                <select id="statusFilter" class="form-select" onchange="filterSales()">
+                    <option value="">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+                <button id="exportBtn" class="btn btn-secondary"><i class="fas fa-file-export"></i> Export</button>
+                <button id="clearFilterBtn" class="btn btn-outline">Clear</button>
+            </div>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="table-container">
+            <table id="salesTable" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Invoice # <i class="fas fa-sort" onclick="sortSales('invoice')"></i></th>
+                        <th>Date <i class="fas fa-sort" onclick="sortSales('date')"></i></th>
+                        <th>Customer <i class="fas fa-sort" onclick="sortSales('customer')"></i></th>
+                        <th>Flock</th>
+                        <th>Quantity <i class="fas fa-sort" onclick="sortSales('quantity')"></i></th>
+                        <th>Rate (₹/bird) <i class="fas fa-sort" onclick="sortSales('rate')"></i></th>
+                        <th>Total Amount (₹) <i class="fas fa-sort" onclick="sortSales('amount')"></i></th>
+                        <th>Payment Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INV-001</td>
+                        <td>12 Nov 2023</td>
+                        <td>Customer 1</td>
+                        <td>Broiler Batch #5</td>
+                        <td>120</td>
+                        <td>₹180</td>
+                        <td>₹21,600</td>
+                        <td><span class="status-badge status-paid">Paid</span></td>
+                        <td class="action-buttons">
+                            <buttonbutton class="btn btn-success btn-sm" title="View Receipt"><i class="fas fa-receipt"></i></button>
+                            <button class="btn btn-primary btn-sm" title="Edit Sale"><i class="fas fa-edit"></i></button>
+                            <buttonbutton class="btn btn-danger btn-sm" title="Delete Sale"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>INV-002</td>
+                        <td>11 Nov 2023</td>
+                        <td>Customer 2</td>
+                        <td>Layer Batch #3</td>
+                        <td>200</td>
+                        <td>₹220</td>
+                        <td>₹44,000</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td class="action-buttons">
+                            <button class="btn btn-success btn-sm" title="View Receipt"><i class="fas fa-receipt"></i></button>
+                            <buttonbutton class="btn btn-primary btn-sm" title="Edit Sale"><i class="fas fa-edit"></i></button>
+                            <buttonbutton class="btn btn-danger btn-sm" title="Delete Sale"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>INV-003</td>
+                        <td>10 Nov 2023</td>
+                        <td>Customer 3</td>
+                        <td>Broiler Batch #4</td>
+                        <td>150</td>
+                        <td>₹175</td>
+                        <td>₹26,250</td>
+                        <td><span class="status-badge status-overdue">Overdue</span></td>
+                        <td class="action-buttons">
+                            <buttonbutton class="btn btn-success btn-sm" title="View Receipt"><i class="fas fa-receipt"></i></button>
+                            <buttonbutton class="btn btn-primary btn-sm" title="Edit Sale"><i class="fas fa-edit"></i></button>
+                            <buttonbutton class="btn btn-danger btn-sm" title="Delete Sale"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="salesPagination" class="pagination">
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+        </div>
+    </div>
+
+    <!-- Record Sale Modal -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="saleModalTitle">Record New Sale</h2>
+                <span class="close" id="closeSaleModal">&times;</span>
+            </div>
+            <form id="saleForm" class="modal-body">
+                <!-- Customer Information -->
+                <div class="form-section">
+                    <h3>Customer Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerType">Customer Type *</label>
+                            <select id="customerType" name="customerType" required onchange="toggleCustomerFields()">
+                                <option value="">Select Type</option>
+                                <option value="existing">Existing Customer</option>
+                                <option value="new">New Customer</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="existingCustomerGroup" style="display: none;">
+                            <label for="existingCustomer">Select Customer *</label>
+                            <select id="existingCustomer" name="existingCustomer">
+                                <option value="">Select Customer</option>
+                                <option value="customer1">Customer 1</option>
+                                <option value="customer2">Customer 2</option>
+                                <option value="customer3">Customer 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="newCustomerFields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerName">Customer Name *</label>
+                                <input type="text" id="customerName" name="customerName">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" name="customerPhone">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerEmail">Email</label>
+                                <input type="email" id="customerEmail" name="customerEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerAddress">Address</label>
+                                <input type="text" id="customerAddress" name="customerAddress">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sale Information -->
+                <div class="form-section">
+                    <h3>Sale Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="saleDate">Sale Date *</label>
+                            <input type="date" id="saleDate" name="saleDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceNumber">Invoice Number *</label>
+                            <input type="text" id="invoiceNumber" name="invoiceNumber" required value="INV-004" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="saleFlock">Select Flock *</label>
+                            <select id="saleFlock" name="flockId" required onchange="updateAvailableBirds()">
+                                <option value="">Select Flock</option>
+                                <option value="flock1">Broiler Batch #5 (120 birds available)</option>
+                                <option value="flock2">Layer Batch #3 (200 birds available)</option>
+                                <option value="flock3">Broiler Batch #4 (150 birds available)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="availableBirds">Available Birds</label>
+                            <input type="text" id="availableBirds" readonly value="Select a flock">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantity">Quantity (Birds) *</label>
+                            <input type="number" id="quantity" name="quantity" required min="1" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Total Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pricePerBird">Price per Bird (₹) *</label>
+                            <input type="number" id="pricePerBird" name="pricePerBird" required step="0.01" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label for="totalAmount">Total Amount (₹)</label>
+                            <input type="number" id="totalAmount" name="totalAmount" readonly value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Information -->
+                <div class="form-section">
+                    <h3>Payment Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentMethod">Payment Method *</label>
+                            <select id="paymentMethod" name="paymentMethod" required onchange="toggleDueDate()">
+                                <option value="">Select Method</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="upi">UPI</option>
+                                <option value="credit">Credit</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paidAmount">Paid Amount (₹) *</label>
+                            <input type="number" id="paidAmount" name="paidAmount" required step="0.01" oninput="updatePaymentStatus()">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentStatus">Payment Status *</label>
+                            <select id="paymentStatus" name="paymentStatus" required>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="partial">Partial</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="dueDateGroup" style="display: none;">
+                            <label for="dueDate">Due Date</label>
+                            <input type="date" id="dueDate" name="dueDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentNotes">Payment Notes</label>
+                        <textarea id="paymentNotes" name="paymentNotes" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="saleNotes">Additional Notes</label>
+                    <textarea id="saleNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('saleModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Record Sale</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Update Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Payment</h2>
+                <span class="close" id="closePaymentModal">&times;</span>
+            </div>
+            <form id="paymentForm" class="modal-body">
+                <div class="form-group">
+                    <label for="paymentAmount">Payment Amount (₹) *</label>
+                    <input type="number" id="paymentAmount" name="amount" required step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentMethodUpdate">Payment Method *</label>
+                    <select id="paymentMethodUpdate" name="method" required>
+                        <option value="cash">Cash</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="upi">UPI</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentDate">Payment Date *</label>
+                    <input type="date" id="paymentDate" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentReference">Reference/Transaction ID</label>
+                    <input type="text" id="paymentReference" name="reference">
+                </div>
+
+                <div class="form-group">
+                    <label for="updatePaymentNotes">Notes</label>
+                    <textarea id="updatePaymentNotes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+    
+    <script>
+        // Real-time data simulation
+        function simulateRealTimeData() {
+            // Update summary cards with random data changes
+            const todayRevenue = Math.floor(Math.random() * 10000) + 20000;
+            const monthlyRevenue = Math.floor(Math.random() * 50000) + 150000;
+            const birdsSoldToday = Math.floor(Math.random() * 50) + 100;
+            const avgPrice = Math.floor(Math.random() * 50) + 150;
+            
+            document.getElementById('todayRevenue').textContent = `₹${todayRevenue.toLocaleString()}`;
+            document.getElementById('monthlyRevenue').textContent = `₹${monthlyRevenue.toLocaleString()}`;
+            document.getElementById('birdsSoldToday').textContent = birdsSoldToday.toLocaleString();
+            document.getElementById('avgPrice').textContent = `₹${avgPrice.toLocaleString()}`;
+            
+            // Randomly add new sales records
+            if (Math.random() > 0.7) {
+                addRandomSale();
+            }
+            
+            // Randomly update payment status
+            if (Math.random() > 0.8) {
+                updateRandomPaymentStatus();
+            }
+            
+            // Show real-time indicator animation
+            const indicator = document.getElementById('realTimeIndicator');
+            indicator.style.opacity = indicator.style.opacity === '0.5' ? '1' : '0.5';
+        }
+        
+        // Add a random sale to the table
+        function addRandomSale() {
+            const invoices = ['INV-004', 'INV-005', 'INV-006'];
+            const customers = ['Customer 4', 'Customer 5', 'Customer 6'];
+            const flocks = ['Broiler Batch #6', 'Layer Batch #4', 'Broiler Batch #7'];
+            const statuses = ['paid', 'pending', 'overdue'];
+            
+            const randomInvoice = invoices[Math.floor(Math.random() * invoices.length)];
+            const randomCustomer = customers[Math.floor(Math.random() * customers.length)];
+            const randomFlock = flocks[Math.floor(Math.random() * flocks.length)];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            const randomQuantity = Math.floor(Math.random() * 100) + 50;
+            const randomRate = Math.floor(Math.random() * 50) + 150;
+            const randomTotal = randomQuantity * randomRate;
+            
+            const table = document.getElementById('salesTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow(0);
+            
+            newRow.innerHTML = `
+                <td>${randomInvoice}</td>
+                <td>${new Date().toLocaleDateString()}</td>
+                <td>${randomCustomer}</td>
+                <td>${randomFlock}</td>
+                <td>${randomQuantity}</td>
+                <td>₹${randomRate}</td>
+                <td>₹${randomTotal.toLocaleString()}</td>
+                <td><span class="status-badge status-${randomStatus}">${randomStatus.charAt(0).toUpperCase() + randomStatus.slice(1)}</span></td>
+                <td class="action-buttons">
+                    <button class="btn btn-success btn-sm"><i class="fas fa-receipt"></i></button>
+                    <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            showAlert('New sale recorded: ' + randomInvoice, 'success');
+        }
+        
+        // Update a random payment status
+        function updateRandomPaymentStatus() {
+            const rows = document.getElementById('salesTable').getElementsByTagName('tbody')[0].rows;
+            if (rows.length > 0) {
+                const randomRow = Math.floor(Math.random() * rows.length);
+                const statusCell = rows[randomRow].cells[7];
+                const currentStatus = statusCell.textContent.trim().toLowerCase();
+                
+                let newStatus;
+                if (currentStatus === 'paid') {
+                    newStatus = 'pending';
+                } else if (currentStatus === 'pending') {
+                    newStatus = Math.random() > 0.5 ? 'paid' : 'overdue';
+                } else {
+                    newStatus = Math.random() > 0.5 ? 'paid' : 'pending';
+                }
+                
+                statusCell.innerHTML = `<span class="status-badge status-${newStatus}">${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>`;
+                
+                showAlert(`Payment status updated for invoice: ${rows[randomRow].cells[0].textContent}`, 'info');
+            }
+        }
+        
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        // Toggle customer fields based on selection
+        function toggleCustomerFields() {
+            const customerType = document.getElementById('customerType').value;
+            const existingCustomerGroup = document.getElementById('existingCustomerGroup');
+            const newCustomerFields = document.getElementById('newCustomerFields');
+            
+            if (customerType === 'existing') {
+                existingCustomerGroup.style.display = 'block';
+                newCustomerFields.style.display = 'none';
+            } else if (customerType === 'new') {
+                existingCustomerGroup.style.display = 'none';
+                newCustomerFields.style.display = 'block';
+            } else {
+                existingCustomerGroup.style.display = 'none';
+                newCustomerFields.style.display = 'none';
+            }
+        }
+        
+        // Update available birds when flock is selected
+        function updateAvailableBirds() {
+            const flockSelect = document.getElementById('saleFlock');
+            const availableBirds = document.getElementById('availableBirds');
+            
+            if (flockSelect.value === 'flock1') {
+                availableBirds.value = '120 birds available';
+            } else if (flockSelect.value === 'flock2') {
+                availableBirds.value = '200 birds available';
+            } else if (flockSelect.value === 'flock3') {
+                availableBirds.value = '150 birds available';
+            } else {
+                availableBirds.value = 'Select a flock';
+            }
+        }
+        
+        // Calculate total amount
+        function calculateTotal() {
+            const quantity = document.getElementById('quantity').value;
+            const pricePerBird = document.getElementById('pricePerBird').value;
+            const totalAmount = document.getElementById('totalAmount');
+            
+            if (quantity && pricePerBird) {
+                totalAmount.value = (quantity * pricePerBird).toFixed(2);
+            } else {
+                totalAmount.value = '0';
+            }
+        }
+        
+        // Toggle due date based on payment method
+        function toggleDueDate() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const dueDateGroup = document.getElementById('dueDateGroup');
+            
+            if (paymentMethod === 'credit') {
+                dueDateGroup.style.display = 'block';
+            } else {
+                dueDateGroup.style.display = 'none';
+            }
+        }
+        
+        // Update payment status based on paid amount
+        function updatePaymentStatus() {
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const paymentStatus = document.getElementById('paymentStatus');
+            
+            if (paidAmount === 0) {
+                paymentStatus.value = 'pending';
+            } else if (paidAmount >= totalAmount) {
+                paymentStatus.value = 'paid';
+            } else {
+                paymentStatus.value = 'partial';
+            }
+        }
+        
+        // Filter sales based on search and filters
+        function filterSales() {
+            // This would filter the sales table based on the search input and filter values
+            const searchText = document.getElementById('saleSearch').value.toLowerCase();
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const customerFilter = document.getElementById('customerFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            // In a real application, this would make an API call or filter client-side data
+            console.log('Filtering sales with:', { searchText, fromDate, toDate, customerFilter, statusFilter });
+            
+            showAlert('Filters applied', 'info');
+        }
+        
+        // Sort sales table
+        function sortSales(column) {
+            // This would sort the sales table by the specified column
+            console.log('Sorting by:', column);
+            showAlert(`Sorted by ${column}`, 'info');
+        }
+        
+        // Open modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+        
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Initialize sales management
+        function initializeSalesManagement() {
+            // Set current date as default for sale date
+            document.getElementById('saleDate').valueAsDate = new Date();
+            
+            // Set up event listeners
+            document.getElementById('recordSaleBtn').addEventListener('click', () => openModal('saleModal'));
+            document.getElementById('closeSaleModal').addEventListener('click', () => closeModal('saleModal'));
+            document.getElementById('closePaymentModal').addEventListener('click', () => closeModal('paymentModal'));
+            document.getElementById('clearFilterBtn').addEventListener('click', () => {
+                document.getElementById('saleSearch').value = '';
+                document.getElementById('fromDate').value = '';
+                document.getElementById('toDate').value = '';
+                document.getElementById('customerFilter').value = '';
+                document.getElementById('statusFilter').value = '';
+                filterSales();
+            });
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                showAlert('Exporting sales data...', 'info');
+            });
+            
+            // Form submissions
+            document.getElementById('saleForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // In a real application, this would send the data to the server
+                showAlert('Sale recorded successfully!', 'success');
+                closeModal('saleModal');
+            });
+            
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // In a real application, this would send the payment data to the server
+                showAlert('Payment updated successfully!', 'success');
+                closeModal('paymentModal');
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+        
+        // Load sales data
+        function loadSalesData() {
+            // In a real application, this would fetch data from an API
+            console.log('Loading sales data...');
+            
+            // Set up real-time data simulation
+            setInterval(simulateRealTimeData, 3000);
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSalesManagement();
+            loadSalesData();
+        });
+    </script>
+</body>
+</html>
