@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PoultryPro - Advanced Farm Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #2e7d32;
@@ -389,7 +390,7 @@
                     <span>Or continue with</span>
                 </div>
                 
-                <button type="button" class="btn btn-google">
+                <button type="button" href="dashboard.html" class="btn btn-google"> 
                     <i class="fab fa-google"></i> Google
                 </button>
                 
@@ -451,6 +452,253 @@
     </div>
     
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Toggle between login and register forms
+    const registerLink = document.getElementById('registerLink');
+    const loginLink = document.getElementById('loginLink');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    // Hide register form initially
+    registerForm.style.display = 'none';
+    
+    registerLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    });
+    
+    loginLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'block';
+    });
+    
+    // Password visibility toggling
+    const setupPasswordToggle = (toggleId, inputId) => {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        
+        if (toggle && input) {
+            toggle.addEventListener('click', function() {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggle.innerHTML = '<i class="far fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    toggle.innerHTML = '<i class="far fa-eye"></i>';
+                }
+            });
+        }
+    };
+    
+    setupPasswordToggle('passwordToggle', 'password');
+    setupPasswordToggle('regPasswordToggle', 'regPassword');
+    setupPasswordToggle('confirmPasswordToggle', 'confirmPassword');
+    
+    // Password strength indicator
+    const passwordInput = document.getElementById('regPassword');
+    const strengthBar = document.getElementById('passwordStrength');
+    
+    if (passwordInput && strengthBar) {
+        passwordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            let strength = 0;
+            
+            // Check password strength
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 12.5;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 12.5;
+            
+            // Update strength bar
+            strengthBar.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthBar.style.background = '#ef4444';
+            } else if (strength < 75) {
+                strengthBar.style.background = '#f59e0b';
+            } else {
+                strengthBar.style.background = '#10b981';
+            }
+        });
+    }
+    
+    // LOGIN FORM SUBMISSION - REDIRECT TO DASHBOARD
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
+        // Simple validation
+        if (!email || !password) {
+            showAlert('Please fill in all fields', 'error');
+            return;
+        }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAlert('Please enter a valid email address', 'error');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+        submitBtn.disabled = true;
+        
+        // Simulate login process (1.5 seconds)
+        setTimeout(() => {
+            // Store user session
+            if (rememberMe) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('rememberMe', 'true');
+            }
+            
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('userEmail', email);
+            
+            // Show success message
+            showAlert('Login successful! Redirecting...', 'success');
+            
+            // Redirect to dashboard after 1 second
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+            
+        }, 1500);
+    });
+    
+    // REGISTER FORM SUBMISSION
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('regName').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const farmName = document.getElementById('farmName').value;
+        const termsAgreed = document.getElementById('termsAgree').checked;
+        
+        // Validation
+        if (!name || !email || !password || !confirmPassword || !farmName) {
+            showAlert('Please fill in all fields', 'error');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            showAlert('Passwords do not match', 'error');
+            return;
+        }
+        
+        if (!termsAgreed) {
+            showAlert('Please agree to the terms and conditions', 'error');
+            return;
+        }
+        
+        // Password strength validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            showAlert('Password must contain at least 8 characters, including uppercase, lowercase, number and special character', 'error');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+        submitBtn.disabled = true;
+        
+        // Simulate registration process
+        setTimeout(() => {
+            // Store user data
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem('userName', name);
+            sessionStorage.setItem('farmName', farmName);
+            
+            showAlert('Account created successfully! Redirecting...', 'success');
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+            
+        }, 1500);
+    });
+    
+    // GOOGLE LOGIN BUTTON
+    const googleBtn = document.querySelector('.btn-google');
+    if (googleBtn) {
+        googleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showAlert('Google login feature coming soon!', 'success');
+            
+            // For demo purposes, redirect to dashboard after 2 seconds
+            setTimeout(() => {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('loginMethod', 'google');
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        });
+    }
+    
+    // Forgot password functionality
+    const forgotPasswordLink = document.getElementById('forgotPassword');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                showAlert('Please enter your email address first', 'error');
+                return;
+            }
+            
+            showAlert(`Password reset instructions sent to ${email}`, 'success');
+        });
+    }
+    
+    // Show alert function
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `
+            <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        alertContainer.innerHTML = ''; // Clear previous alerts
+        alertContainer.appendChild(alert);
+        
+        // Remove alert after 5 seconds
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
+    
+    // Language selector functionality
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', function() {
+            showAlert(`Language changed to ${this.options[this.selectedIndex].text}`, 'success');
+        });
+    }
+    
+    // Load remembered email if exists
+    if (localStorage.getItem('rememberMe') === 'true') {
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('email').value = savedEmail;
+            document.getElementById('rememberMe').checked = true;
+        }
+    }
+});
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle between login and register forms
             const registerLink = document.getElementById('registerLink');
